@@ -11,5 +11,7 @@ CREATE TABLE users (
     lastname VARCHAR(100) NOT NULL,
     phone_number VARCHAR(20),
     email VARCHAR(255) UNIQUE NOT NULL,
-    password TEXT NOT NULL
+    password TEXT,
+    oauth_provider VARCHAR(50),
+    oauth_provider_id VARCHAR(255)
 );
