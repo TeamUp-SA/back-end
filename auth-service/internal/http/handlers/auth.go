@@ -3,42 +3,38 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
 
 	"auth-service/internal/auth"
-
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-gonic/gin"
 )
 
-// GET /login
 func LoginHandler(c *gin.Context) {
+	// If already has valid JWT cookie, skip Google
+	if tok, err := c.Cookie("access_token"); err == nil && tok != "" {
+		if _, err := auth.ParseAndValidate(tok); err == nil {
+			c.Redirect(http.StatusFound, "/app/me")
+			return
+		}
+	}
 	state := auth.RandomKey(20)
-	sess := sessions.Default(c)
-	sess.Set(auth.SessionKeyState, state)
-	_ = sess.Save()
-
-	url := auth.GetAuthURL(state)
-	c.Redirect(http.StatusTemporaryRedirect, url)
+	http.SetCookie(c.Writer, &http.Cookie{Name: "oauth_state", Value: state, Path: "/", HttpOnly: true, MaxAge: 300})
+	c.Redirect(http.StatusTemporaryRedirect, auth.GetAuthURL(state))
 }
 
-// GET /auth/callback
 func CallbackHandler(c *gin.Context) {
-	sess := sessions.Default(c)
-
 	state := c.Query("state")
 	code := c.Query("code")
 	if state == "" || code == "" {
 		c.String(http.StatusBadRequest, "missing state or code")
 		return
 	}
-
-	if storedState, _ := sess.Get(auth.SessionKeyState).(string); storedState == "" || storedState != state {
+	if ck, err := c.Cookie("oauth_state"); err != nil || ck != state {
 		c.String(http.StatusBadRequest, "invalid oauth state")
 		return
 	}
-	// clean up state
-	sess.Delete(auth.SessionKeyState)
-	_ = sess.Save()
+	http.SetCookie(c.Writer, &http.Cookie{Name: "oauth_state", Value: "", Path: "/", MaxAge: -1})
 
 	gu, err := auth.ExchangeCodeForUser(code)
 	if err != nil {
@@ -47,25 +43,38 @@ func CallbackHandler(c *gin.Context) {
 		return
 	}
 
+	// Upsert DB (you already have these functions)
 	err = auth.UpsertUserInfo(gu)
-
 	if err != nil {
-		log.Println("Upsert user info:", err)
-		c.String(http.StatusInternalServerError, "upsert user info failed")
+		log.Println("upsert identity error:", err)
+		c.String(http.StatusInternalServerError, "db upsert failed")
 		return
 	}
 
-	// Store minimal user info in session
-	sess.Set(auth.SessionKeyUser, gu)
-	_ = sess.Save()
+	// Create JWT (15 minutes). Claim `uid` can be your internal UUID or provider `sub`.
+	token, err := auth.GenerateAccessToken(gu.Sub, gu.Email, "user", 15*time.Minute)
+	if err != nil {
+		log.Println("jwt sign error:", err)
+		c.String(http.StatusInternalServerError, "cannot sign token")
+		return
+	}
+
+	// Set HttpOnly cookie (or return JSON if SPA/mobile wants bearer)
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "access_token",
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false, // true in production behind HTTPS
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   15 * 60,
+	})
 
 	// c.Redirect(http.StatusTemporaryRedirect, "/app/me")
 }
 
-// GET /logout
 func LogoutHandler(c *gin.Context) {
-	sess := sessions.Default(c)
-	sess.Clear()
-	_ = sess.Save()
+	// Stateless JWT: deleting cookie is enough (or maintain a denylist if needed)
+	http.SetCookie(c.Writer, &http.Cookie{Name: "access_token", Value: "", Path: "/", MaxAge: -1, HttpOnly: true})
 	c.String(http.StatusOK, "Logged out.")
 }

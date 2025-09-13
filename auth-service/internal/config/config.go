@@ -13,6 +13,7 @@ type Config struct {
 	OAuthRedirectURL        string
 	SessionSecret           string
 	DatabaseDSN             string
+	JWTSecret               string
 }
 
 func Load() *Config {
