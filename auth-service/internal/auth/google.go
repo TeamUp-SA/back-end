@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"auth-service/internal/db"
 	"context"
 	"crypto/rand"
 	"encoding/base64"
@@ -87,4 +88,21 @@ func RandomKey(n int) string {
 		log.Fatalf("failed to generate random key: %v", err)
 	}
 	return base64.URLEncoding.EncodeToString(b)
+}
+
+func UpsertUserInfo(gu *GoogleUser) error {
+	u := User{
+		Username:        gu.Email,
+		Name:            gu.Name,
+		Lastname:        gu.FamilyName,
+		Email:           gu.Email,
+		OAuthProvider:   "google",
+		OAuthProviderID: gu.Sub,
+	}
+
+	if err := db.Gorm().Create(&u).Error; err != nil {
+		log.Println("insert failed:", err)
+		return err
+	}
+	return nil
 }

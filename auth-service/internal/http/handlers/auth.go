@@ -47,11 +47,19 @@ func CallbackHandler(c *gin.Context) {
 		return
 	}
 
+	err = auth.UpsertUserInfo(gu)
+
+	if err != nil {
+		log.Println("Upsert user info:", err)
+		c.String(http.StatusInternalServerError, "upsert user info failed")
+		return
+	}
+
 	// Store minimal user info in session
 	sess.Set(auth.SessionKeyUser, gu)
 	_ = sess.Save()
 
-	c.Redirect(http.StatusTemporaryRedirect, "/app/me")
+	// c.Redirect(http.StatusTemporaryRedirect, "/app/me")
 }
 
 // GET /logout

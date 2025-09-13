@@ -12,13 +12,17 @@ import (
 	// internal packages (update the module path to your actual module name from go.mod)
 	"auth-service/internal/auth"
 	"auth-service/internal/config"
+	"auth-service/internal/db"
 	h "auth-service/internal/http/handlers"
 )
 
 func main() {
 	// Load configuration (.env is handled inside config.Load)
 	cfg := config.Load()
-
+	db.MustInitGorm()
+	if err := db.Gorm().AutoMigrate(&auth.User{}); err != nil {
+		log.Fatalf("auto-migrate: %v", err)
+	}
 	// Register types stored in sessions
 	gob.Register(auth.GoogleUser{})
 
