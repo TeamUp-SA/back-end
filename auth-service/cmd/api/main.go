@@ -14,7 +14,11 @@ import (
 
 func main() {
 	// Load configuration (.env is handled inside config.Load)
-    cfg := config.Load()
+	cfg := config.Load()
+	db.MustInitGorm()
+	if err := db.Gorm().AutoMigrate(&auth.User{}); err != nil {
+		log.Fatalf("auto-migrate: %v", err)
+	}
 
 	// Initialize Google OAuth (reads env vars internally)
 	auth.InitGoogleOAuth()
