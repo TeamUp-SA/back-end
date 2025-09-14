@@ -10,6 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      - pgdata:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - topup
@@ -27,7 +28,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_DSN: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
+      DATABASE_DSN: ${DATABASE_DSN}
       JWT_SECRET: ${JWT_SECRET}
     ports:
       - "8081:8081"
@@ -43,12 +44,12 @@ services:
     depends_on:
       - user-service
     environment:
-      DATABASE_DSN: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
+      DATABASE_DSN: ${DATABASE_DSN}
       JWT_SECRET: ${JWT_SECRET}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       OAUTH_REDIRECT_URL: ${OAUTH_REDIRECT_URL}
-      USER_SERVICE_ADDR: http://user-service:8081
+      USER_SERVICE_ADDR: ${USER_SERVICE_ADDR}
     ports:
       - "8082:8082"
     networks:
@@ -67,7 +68,6 @@ services:
       - "8888:8888"
     networks:
       - topup
-
 volumes:
   pgdata:
 
