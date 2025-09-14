@@ -1,19 +1,19 @@
 package auth
 
 import (
-    "context"
-    "crypto/rand"
-    "encoding/base64"
-    "encoding/json"
-    "log"
-    "os"
+	"context"
+	"crypto/rand"
+	"encoding/base64"
+	"encoding/json"
+	"log"
+	"os"
 
-    "golang.org/x/oauth2"
-    "golang.org/x/oauth2/google"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 
-    "auth-service/internal/config"
-    "auth-service/internal/userclient"
-    userv1 "user-service/pb/userv1"
+	"auth-service/internal/config"
+	"auth-service/internal/userclient"
+	userv1 "user-service/pb/userv1"
 )
 
 const (
@@ -94,27 +94,28 @@ func RandomKey(n int) string {
 }
 
 func UpsertUserInfo(gu *GoogleUser) error {
-    // Prefer calling user-service via gRPC instead of DB write here
-    cfg := config.Load()
-    cli, err := userclient.New(cfg)
-    if err != nil {
-        log.Println("userclient dial:", err)
-        return err
-    }
-    defer cli.Close()
+	// Prefer calling user-service via gRPC instead of DB write here
+	cfg := config.Load()
+	cli, err := userclient.New(cfg)
+	if err != nil {
+		log.Println("userclient dial:", err)
+		return err
+	}
+	defer cli.Close()
 
-    _, err = cli.UpsertUser(context.Background(), &userv1.UpsertUserRequest{
-        Email:           gu.Email,
-        Name:            gu.Name,
-        Lastname:        gu.FamilyName,
-        Username:        gu.Email,
-        OauthProvider:   "google",
-        OauthProviderId: gu.Sub,
-        PhoneNumber:     "",
-    })
-    if err != nil {
-        log.Println("grpc upsert user:", err)
-        return err
-    }
-    return nil
+	//TODO: check if user already have info in db to avoid overwrite updated info
+	_, err = cli.UpsertUser(context.Background(), &userv1.UpsertUserRequest{
+		Email:           gu.Email,
+		Name:            gu.Name,
+		Lastname:        gu.FamilyName,
+		Username:        gu.Email,
+		OauthProvider:   "google",
+		OauthProviderId: gu.Sub,
+		PhoneNumber:     "",
+	})
+	if err != nil {
+		log.Println("grpc upsert user:", err)
+		return err
+	}
+	return nil
 }
