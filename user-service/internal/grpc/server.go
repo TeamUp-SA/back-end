@@ -66,10 +66,10 @@ func (s *UserServiceServer) UpsertUser(ctx context.Context, req *userv1.UpsertUs
 			updates["phone_number"] = v
 		}
 		if v := req.GetOauthProvider(); v != "" {
-			updates["oauth_provider"] = v
+			updates["o_auth_provider"] = v
 		}
 		if v := req.GetOauthProviderId(); v != "" {
-			updates["oauth_provider_id"] = v
+			updates["o_auth_provider_id"] = v
 		}
 		if len(updates) > 0 {
 			if err := tx.Model(&u).Where("email = ?", req.Email).Updates(updates).Error; err != nil {
