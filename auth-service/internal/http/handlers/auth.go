@@ -14,7 +14,7 @@ func LoginHandler(c *gin.Context) {
 	// If already has valid JWT cookie, skip Google
 	if tok, err := c.Cookie("access_token"); err == nil && tok != "" {
 		if _, err := auth.ParseAndValidate(tok); err == nil {
-			c.Redirect(http.StatusFound, "/app/me")
+			// c.Redirect(http.StatusFound, "/app/me")
 			return
 		}
 	}

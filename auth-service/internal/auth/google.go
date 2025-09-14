@@ -1,6 +1,7 @@
 package auth
 
 import (
+<<<<<<< HEAD
 	"context"
 	"crypto/rand"
 	"encoding/base64"
@@ -14,6 +15,21 @@ import (
 	"auth-service/internal/config"
 	"auth-service/internal/userclient"
 	userv1 "user-service/pb/userv1"
+=======
+    "context"
+    "crypto/rand"
+    "encoding/base64"
+    "encoding/json"
+    "log"
+    "os"
+
+    "golang.org/x/oauth2"
+    "golang.org/x/oauth2/google"
+
+    "auth-service/internal/config"
+    "auth-service/internal/userclient"
+    userv1 "user-service/pb/userv1"
+>>>>>>> d809285 (feat: connect user-service and auth-service using gprc)
 )
 
 const (
