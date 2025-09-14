@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package user.v1;
+
+option go_package = "user-service/pb/userv1;userv1";
+
+import "google/protobuf/timestamp.proto";
+
+message User {
+  string id = 1;
+  string username = 2;
+  string name = 3;
+  string lastname = 4;
+  string phone_number = 5;
+  string email = 6;
+  string oauth_provider = 7;
+  string oauth_provider_id = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message UpsertUserRequest {
+  string email = 1;
+  string name = 2;
+  string lastname = 3;
+  string oauth_provider = 4;
+  string oauth_provider_id = 5;
+  string username = 6;
+  string phone_number = 7;
+}
+
+message UpsertUserResponse {
+  User user = 1;
+}
+
+message GetUserByEmailRequest { string email = 1; }
+message GetUserByEmailResponse { User user = 1; }
+
+message UpdateUserProfileRequest {
+  string email = 1; // identifier
+  string username = 2;
+  string name = 3;
+  string lastname = 4;
+  string phone_number = 5;
+}
+
+message UpdateUserProfileResponse { User user = 1; }
+
+service UserService {
+  rpc UpsertUser(UpsertUserRequest) returns (UpsertUserResponse);
+  rpc GetUserByEmail(GetUserByEmailRequest) returns (GetUserByEmailResponse);
+  rpc UpdateUserProfile(UpdateUserProfileRequest) returns (UpdateUserProfileResponse);
+}
+

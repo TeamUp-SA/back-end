@@ -1,25 +1,20 @@
 package main
 
 import (
-	"log"
-	"net/http"
+    "log"
+    "net/http"
 
-	"github.com/gin-gonic/gin"
+    "github.com/gin-gonic/gin"
 
-	// internal packages (update the module path to your actual module name from go.mod)
-	"auth-service/internal/auth"
-	"auth-service/internal/config"
-	"auth-service/internal/db"
-	h "auth-service/internal/http/handlers"
+    // internal packages (update the module path to your actual module name from go.mod)
+    "auth-service/internal/auth"
+    "auth-service/internal/config"
+    h "auth-service/internal/http/handlers"
 )
 
 func main() {
 	// Load configuration (.env is handled inside config.Load)
-	cfg := config.Load()
-	db.MustInitGorm()
-	if err := db.Gorm().AutoMigrate(&auth.User{}); err != nil {
-		log.Fatalf("auto-migrate: %v", err)
-	}
+    cfg := config.Load()
 
 	// Initialize Google OAuth (reads env vars internally)
 	auth.InitGoogleOAuth()
