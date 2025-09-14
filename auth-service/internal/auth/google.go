@@ -2,12 +2,16 @@ package auth
 
 import (
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> d99d6e8 (chore: add todo)
 	"context"
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
 	"log"
 	"os"
+<<<<<<< HEAD
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -22,14 +26,22 @@ import (
     "encoding/json"
     "log"
     "os"
+=======
+>>>>>>> d99d6e8 (chore: add todo)
 
-    "golang.org/x/oauth2"
-    "golang.org/x/oauth2/google"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 
+<<<<<<< HEAD
     "auth-service/internal/config"
     "auth-service/internal/userclient"
     userv1 "user-service/pb/userv1"
 >>>>>>> d809285 (feat: connect user-service and auth-service using gprc)
+=======
+	"auth-service/internal/config"
+	"auth-service/internal/userclient"
+	userv1 "user-service/pb/userv1"
+>>>>>>> d99d6e8 (chore: add todo)
 )
 
 const (
