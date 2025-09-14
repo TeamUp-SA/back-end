@@ -1,7 +1,5 @@
 CREATE DATABASE "TopUp";
 
-\c "TopUp"
-
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE users (
