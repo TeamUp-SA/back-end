@@ -10,8 +10,30 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - topup
 
-volumes:
-  pgdata:
+  api-gateway:
+    build: ./api-gateway
+    image: api-gateway:release-1
+    container_name: api-gateway
+    depends_on:
+      - db
+    environment:
+      PORT: 8080
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: db
+      CF_ACCESS_CLIENT_ID: ${CF_ACCESS_CLIENT_ID}
+      CF_ACCESS_CLIENT_SECRET: ${CF_ACCESS_CLIENT_SECRET}
+      CF_TEAM_DOMAIN: ${CF_TEAM_DOMAIN}
+    ports:
+      - "8080:8080"
+    networks:
+      - topup
+
+networks:
+  topup:
+    driver: bridge
