@@ -29,6 +29,7 @@ func Load() *Config {
         OAuthRedirectURL:        os.Getenv("OAUTH_REDIRECT_URL"),
         SessionSecret:           os.Getenv("SESSION_SECRET"),
         DatabaseDSN:             os.Getenv("DATABASE_DSN"),
+        JWTSecret:               os.Getenv("JWT_SECRET"),
         UserServiceAddr:         getenvDefault("USER_SERVICE_ADDR", "localhost:9091"),
     }
 }

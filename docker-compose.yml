@@ -12,6 +12,65 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - topup
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
+  user-service:
+    build: ./user-service
+    image: user-service:latest
+    container_name: user-service
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_DSN: ${DATABASE_DSN}
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "8081:8081"
+    networks:
+      - topup
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+    image: auth-service:latest
+    container_name: auth-service
+    depends_on:
+      - user-service
+    environment:
+      DATABASE_DSN: ${DATABASE_DSN}
+      JWT_SECRET: ${JWT_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      OAUTH_REDIRECT_URL: ${OAUTH_REDIRECT_URL}
+      USER_SERVICE_ADDR: ${USER_SERVICE_ADDR}
+    ports:
+      - "8082:8082"
+    networks:
+      - topup
+
+  krakend:
+    image: krakend:latest
+    container_name: krakend
+    depends_on:
+      - user-service
+      - auth-service
+    volumes:
+      - ./krakend.json:/etc/krakend/krakend.json
+    command: ["run", "-c", "/etc/krakend/krakend.json"]
+    ports:
+      - "8888:8888"
+    networks:
+      - topup
 volumes:
   pgdata:
+
+networks:
+  topup:
+    driver: bridge

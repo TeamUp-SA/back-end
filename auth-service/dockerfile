@@ -1,0 +1,24 @@
+FROM golang:1.24-alpine AS builder
+
+WORKDIR /app
+
+COPY auth-service /app/auth-service
+COPY user-service /app/user-service
+
+WORKDIR /app/auth-service
+
+RUN apk add --no-cache git gcc musl-dev
+
+RUN go mod download
+
+RUN go build -o auth-service ./cmd/api
+
+FROM alpine:latest
+
+WORKDIR /app
+
+COPY --from=builder /app/auth-service .
+
+EXPOSE 8082
+
+CMD ["./auth-service"]
