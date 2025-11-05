@@ -49,10 +49,8 @@ func (c *Consumer) ConsumeMessages() {
         switch msg.Type {
         case "email":
             notifier.SendEmail(msg.To, msg.Message)
-        case "sms":
-            notifier.SendSMS(msg.To, msg.Message)
         case "push":
-            notifier.SendPush(msg.To, msg.Message)
+            notifier.SendPush("Alert", msg.Message)
         default:
             fmt.Printf("unknown type: %s\n", msg.Type)
         }
