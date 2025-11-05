@@ -1,0 +1,19 @@
+FROM golang:1.24-alpine AS builder
+
+WORKDIR /app
+
+COPY . .
+
+RUN apk add --no-cache git gcc musl-dev
+
+RUN go build -o notification-service ./cmd
+
+FROM alpine:latest
+
+WORKDIR /app
+
+COPY --from=builder /app/notification-service .
+
+EXPOSE 9999
+
+CMD ["./notification-service"]

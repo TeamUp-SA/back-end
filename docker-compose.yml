@@ -1,4 +1,7 @@
+version: "3.8"
+
 services:
+  # ------------------- Database -------------------
   db:
     image: postgres:15
     container_name: topup_postgres
@@ -20,6 +23,7 @@ services:
       timeout: 5s
       retries: 5
 
+  # ------------------- User Service -------------------
   user-service:
     build: ./user-service
     image: user-service:latest
@@ -35,6 +39,7 @@ services:
     networks:
       - topup
 
+  # ------------------- Auth Service -------------------
   auth-service:
     build:
       context: .
@@ -55,6 +60,7 @@ services:
     networks:
       - topup
 
+  # ------------------- KrakenD API Gateway -------------------
   krakend:
     image: krakend:latest
     container_name: krakend
@@ -68,6 +74,54 @@ services:
       - "8888:8888"
     networks:
       - topup
+
+  # ------------------- Zookeeper -------------------
+  zookeeper:
+    image: zookeeper:3.9
+    container_name: zookeeper
+    restart: always
+    ports:
+      - "2181:2181"
+    networks:
+      - topup
+    healthcheck:
+      test: ["CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok"]
+      interval: 5s
+      retries: 5
+      timeout: 5s
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    networks:
+      - topup
+
+  # ------------------- Notification Service -------------------
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    environment:
+      MAILERSEND_SMTP_USER: "MS_BBVFQ8@test-zkq340e8z7kgd796.mlsender.net"
+      MAILERSEND_SMTP_PASS: "mssp.DTL4LFG.pxkjn41ry50gz781.23AXsZY"
+      MAILERSEND_SMTP_SERVER: "smtp.mailersend.net"
+      MAILERSEND_SMTP_PORT: "587"
+    depends_on:
+      - kafka
+    ports:
+      - "8083:8083"
+    expose:
+      - 9999
+    networks:
+      - topup
+
 volumes:
   pgdata:
 
