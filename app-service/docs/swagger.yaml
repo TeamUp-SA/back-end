@@ -1,0 +1,792 @@
+definitions:
+  dto.Bulletin:
+    properties:
+      authorID:
+        type: string
+      bulletinID:
+        type: string
+      content:
+        type: string
+      createdAt:
+        type: string
+      groupID:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.BulletinCreateRequest:
+    properties:
+      authorID:
+        type: string
+      content:
+        type: string
+      groupID:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.BulletinUpdateRequest:
+    properties:
+      content:
+        type: string
+      groupID:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.Education:
+    properties:
+      degree:
+        type: string
+      endYear:
+        type: integer
+      field:
+        type: string
+      school:
+        type: string
+      startYear:
+        type: integer
+    type: object
+  dto.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+      status:
+        type: integer
+      success:
+        type: boolean
+    type: object
+  dto.Experience:
+    properties:
+      company:
+        description: or "ABC Inc."
+        type: string
+      description:
+        type: string
+      endDate:
+        type: integer
+      startDate:
+        type: integer
+      title:
+        description: e.g. "Frontend Developer Intern"
+        type: string
+    type: object
+  dto.Group:
+    properties:
+      closed:
+        type: boolean
+      createdAt:
+        type: string
+      description:
+        type: string
+      groupID:
+        type: string
+      members:
+        items:
+          type: string
+        type: array
+      ownerID:
+        type: string
+      tags:
+        items:
+          type: integer
+        type: array
+      title:
+        type: string
+    type: object
+  dto.GroupUpdateRequest:
+    properties:
+      closed:
+        type: boolean
+      createdAt:
+        type: string
+      description:
+        type: string
+      members:
+        items:
+          type: string
+        type: array
+      ownerID:
+        type: string
+      tags:
+        items:
+          type: integer
+        type: array
+      title:
+        type: string
+    type: object
+  dto.Member:
+    properties:
+      bio:
+        description: Portfolio Section
+        type: string
+      education:
+        items:
+          $ref: '#/definitions/dto.Education'
+        type: array
+      email:
+        type: string
+      experience:
+        description: Experience Section
+        items:
+          $ref: '#/definitions/dto.Experience'
+        type: array
+      firstName:
+        type: string
+      github:
+        type: string
+      groupMemberships:
+        description: Group participation
+        items:
+          type: string
+        type: array
+      lastName:
+        type: string
+      linkedIn:
+        type: string
+      memberID:
+        type: string
+      password:
+        type: string
+      phoneNumber:
+        type: string
+      profileImage:
+        type: string
+      skills:
+        items:
+          type: string
+        type: array
+      username:
+        type: string
+      website:
+        type: string
+    type: object
+  dto.MemberRegisterRequest:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      password:
+        type: string
+      phoneNumber:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.MemberUpdateRequest:
+    properties:
+      bio:
+        description: Portfolio Section
+        type: string
+      education:
+        items:
+          $ref: '#/definitions/dto.Education'
+        type: array
+      email:
+        type: string
+      experience:
+        description: Experience Section
+        items:
+          $ref: '#/definitions/dto.Experience'
+        type: array
+      firstName:
+        type: string
+      github:
+        type: string
+      groupMemberships:
+        description: Group participation
+        items:
+          type: string
+        type: array
+      lastName:
+        type: string
+      linkedIn:
+        type: string
+      password:
+        type: string
+      phoneNumber:
+        type: string
+      profileImage:
+        type: string
+      skills:
+        items:
+          type: string
+        type: array
+      username:
+        type: string
+      website:
+        type: string
+    type: object
+  dto.SuccessResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      status:
+        type: integer
+      success:
+        type: boolean
+    type: object
+  model.Group:
+    properties:
+      closed:
+        type: boolean
+      createdAt:
+        type: string
+      description:
+        type: string
+      groupID:
+        type: string
+      members:
+        items:
+          type: string
+        type: array
+      ownerID:
+        type: string
+      tags:
+        items:
+          type: integer
+        type: array
+      title:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /bulletin/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all bulletins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Bulletin'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get all bulletins
+      tags:
+      - bulletin
+    post:
+      consumes:
+      - application/json
+      description: Creates a new bulletin in the database
+      parameters:
+      - description: Bulletin to create
+        in: body
+        name: bulletin
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BulletinCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Bulletin'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Create a new bulletin
+      tags:
+      - bulletin
+  /bulletin/{bulletin_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a bulletin's data by its ID
+      parameters:
+      - description: Bulletin ID
+        in: path
+        name: bulletin_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SuccessResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Delete a bulletin by ID
+      tags:
+      - bulletin
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a bulletin's data by its ID
+      parameters:
+      - description: Bulletin ID
+        in: path
+        name: bulletin_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Bulletin'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get a bulletin by ID
+      tags:
+      - bulletin
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing bulletin's data by its ID
+      parameters:
+      - description: Bulletin ID
+        in: path
+        name: bulletin_id
+        required: true
+        type: string
+      - description: Bulletin data to update
+        in: body
+        name: bulletin
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BulletinUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Bulletin'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Update a bulletin by ID
+      tags:
+      - bulletin
+  /bulletin/author/{author_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves each author's bulletins by author ID
+      parameters:
+      - description: Author ID
+        in: path
+        name: author_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Bulletin'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get bulletins by authorID
+      tags:
+      - bulletin
+  /bulletin/group/{group_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves each group's bulletins by group ID
+      parameters:
+      - description: Group ID
+        in: path
+        name: group_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Bulletin'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get bulletins by groupID
+      tags:
+      - bulletin
+  /group/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all groups
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Group'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get all groups
+      tags:
+      - group
+    post:
+      consumes:
+      - application/json
+      description: Creates a new group in the database
+      parameters:
+      - description: Group to create
+        in: body
+        name: group
+        required: true
+        schema:
+          $ref: '#/definitions/model.Group'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Group'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Create a new group
+      tags:
+      - group
+  /group/{group_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a group's data by its ID
+      parameters:
+      - description: Group ID
+        in: path
+        name: group_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SuccessResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Delete a group by ID
+      tags:
+      - group
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a group's data by their ID
+      parameters:
+      - description: Group ID
+        in: path
+        name: group_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Group'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get a group by ID
+      tags:
+      - group
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing group's data by their ID
+      parameters:
+      - description: Group ID
+        in: path
+        name: group_id
+        required: true
+        type: string
+      - description: Group data to update
+        in: body
+        name: updatedGroup
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GroupUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Group'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Update a group by ID
+      tags:
+      - group
+  /group/owner/{owner_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves each owner's groups-on-display by owner ID
+      parameters:
+      - description: Owner ID
+        in: path
+        name: owner_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Group'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get groups by ownerID
+      tags:
+      - group
+  /member/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all members
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Member'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get all members
+      tags:
+      - member
+    post:
+      consumes:
+      - application/json
+      description: Creates a new member in the database
+      parameters:
+      - description: Member to create
+        in: body
+        name: member
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MemberRegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Member'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Create a new member
+      tags:
+      - member
+  /member/{member_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a member's data by their ID
+      parameters:
+      - description: Member ID
+        in: path
+        name: member_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Member'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get a member by ID
+      tags:
+      - member
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing member's data by their ID
+      parameters:
+      - description: Member ID
+        in: path
+        name: member_id
+        required: true
+        type: string
+      - description: Member data to update
+        in: body
+        name: updatedMember
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MemberUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Member'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Update a member by ID
+      tags:
+      - member
+swagger: "2.0"
