@@ -67,6 +67,7 @@ services:
     depends_on:
       - user-service
       - auth-service
+      - app-service
     volumes:
       - ./krakend.json:/etc/krakend/krakend.json
     command: ["run", "-c", "/etc/krakend/krakend.json"]
@@ -127,7 +128,7 @@ services:
   app-service:
     build: ./app-service
     image: app-service:latest
-    container_name: teamup-app-service
+    container_name: app-service
     restart: always
     environment:
       APP_PORT: ${APP_PORT}

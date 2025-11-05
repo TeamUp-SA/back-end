@@ -30,7 +30,7 @@
       "output_encoding": "no-op",
       "backend": [
         {
-          "url_pattern": "/{rest}",
+          "url_pattern": "/api/v1/{rest}",
           "host": ["http://app-service:3001"]
         }
       ]
