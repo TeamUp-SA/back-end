@@ -1,41 +1,62 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 
-	// internal packages (update the module path to your actual module name from go.mod)
 	"auth-service/internal/auth"
 	"auth-service/internal/config"
 	h "auth-service/internal/http/handlers"
 )
 
-func main() {
-	// Load configuration (.env is handled inside config.Load)
-    cfg := config.Load()
+var ctx = context.Background()
 
-	// Initialize Google OAuth (reads env vars internally)
+func main() {
+	// Load .env or environment variables
+	cfg := config.Load()
+
+	// Initialize Google OAuth credentials
 	auth.InitGoogleOAuth()
 
-	// Ensure JWT secret is set (for HS256). For RS256, switch to key files instead.
-	if cfg.SessionSecret == "" && cfg.JWTSecret == "" {
-		log.Fatal("JWT_SECRET is required when using JWT auth (or configure RS256 keys)")
+	// Ensure JWT secret is available
+	if cfg.JWTSecret == "" {
+		log.Fatal("❌ JWT_SECRET is required")
 	}
 
-	// Gin router
+	// ✅ Initialize Redis client
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "redis:6379", 
+		Password: "",          
+		DB:       0,          
+	})
+
+	// Ping Redis
+	if err := rdb.Ping(ctx).Err(); err != nil {
+		log.Fatalf("❌ Failed to connect to Redis: %v", err)
+	}
+	log.Println("✅ Connected to Redis")
+
+	// Initialize Gin router
 	r := gin.Default()
+
+	// Inject redis into handlers
+	handler := h.NewHandler(rdb)
 
 	// Public routes
 	r.GET("/health", func(c *gin.Context) {
-		c.String(http.StatusOK, "Hello! Go to /login to sign in with Google.")
+		c.String(http.StatusOK, "Auth service is running.")
 	})
-	r.GET("/login", h.LoginHandler)
-	r.GET("/auth/callback", h.CallbackHandler)
-	r.GET("/logout", h.LogoutHandler)
 
-	// Start server
+	// Auth routes
+	r.GET("/login", handler.LoginHandler)
+	r.GET("/auth/callback", handler.CallbackHandler)
+	r.GET("/logout", handler.LogoutHandler)
+
+	// Start the service
 	if err := r.Run(":8082"); err != nil {
 		log.Fatal(err)
 	}
