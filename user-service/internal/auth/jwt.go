@@ -1,11 +1,11 @@
 package auth
 
 import (
-    "errors"
-    "os"
-    "time"
+	"errors"
+	"os"
+	"time"
 
-    "github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type Claims struct {
@@ -34,7 +34,7 @@ func GenerateAccessToken(userID, email, role string, ttl time.Duration) (string,
             ExpiresAt: jwt.NewNumericDate(now.Add(ttl)),
             NotBefore: jwt.NewNumericDate(now),
             Issuer:    "user-service",
-            Audience:  []string{"topup-app"},
+            Audience:  []string{"teamup-app"},
         },
     }
     tok := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
