@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 
+	"user-service/internal/cache"
 	"user-service/internal/config"
 	"user-service/internal/db"
 	grpcserver "user-service/internal/grpc"
@@ -19,9 +20,10 @@ import (
 )
 
 func main() {
-	// Load env and init DB
 	_ = config.Load()
 	db.MustInitGorm()
+	cache.InitRedis()
+
 	if err := db.Gorm().AutoMigrate(&user.User{}); err != nil {
 		log.Fatalf("auto-migrate: %v", err)
 	}
@@ -58,7 +60,7 @@ func main() {
 		}
 	}()
 
-	if err := r.Run(":8081"); err != nil { // user-service on 8081
+	if err := r.Run(":8081"); err != nil {
 		log.Fatal(err)
 	}
 }
