@@ -13,7 +13,7 @@ type Bulletin struct {
 	Title       string               `json:"title" bson:"title"`
 	Description string               `json:"description" bson:"description"`
 	GroupID     []primitive.ObjectID `json:"groupID,omitempty" bson:"group_id,omitempty"`
-	Date        time.Time            `json:"date" bson:"date"`
+	Date        string            `json:"date" bson:"date"`
 	Image       string               `json:"image" bson:"image"`
 	Tags        []grouptag.GroupTag  `json:"tags" bson:"tags"`
 	CreatedAt   time.Time            `json:"createdAt" bson:"createdAt"`

@@ -13,7 +13,7 @@ type Bulletin struct {
 	Title       string               `json:"title"`
 	Description string               `json:"description"`
 	GroupID     []primitive.ObjectID `json:"groupID,omitempty"`
-	Date        time.Time            `json:"date"`
+	Date        string            `json:"date"`
 	Image       string               `json:"image"`
 	Tags        []grouptag.GroupTag  `json:"tags"`
 	CreatedAt   time.Time            `json:"createdAt"`
@@ -24,7 +24,7 @@ type BulletinCreateRequest struct {
 	Title       string               `json:"title"`
 	Description string               `json:"description"`
 	GroupID     []primitive.ObjectID `json:"groupID,omitempty"`
-	Date        time.Time            `json:"date"`
+	Date        string            `json:"date"`
 	Image       string               `json:"image"`
 	Tags        []grouptag.GroupTag  `json:"tags"`
 }
@@ -33,7 +33,7 @@ type BulletinUpdateRequest struct {
 	Title       string               `json:"title"`
 	Description string               `json:"description"`
 	GroupID     []primitive.ObjectID `json:"groupID,omitempty"`
-	Date        time.Time            `json:"date"`
+	Date        string            `json:"date"`
 	Image       string               `json:"image"`
 	Tags        []grouptag.GroupTag  `json:"tags"`
 }
