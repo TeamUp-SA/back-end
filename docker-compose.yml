@@ -4,7 +4,7 @@ services:
   # ------------------- Database -------------------
   db:
     image: postgres:15
-    container_name: topup_postgres
+    container_name: teamup_postgres
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -16,12 +16,22 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - topup
+      - teamup
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - teamup
 
   # ------------------- User Service -------------------
   user-service:
@@ -31,13 +41,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
     environment:
       DATABASE_DSN: ${DATABASE_DSN}
       JWT_SECRET: ${JWT_SECRET}
     ports:
       - "8081:8081"
     networks:
-      - topup
+      - teamup
 
   # ------------------- Auth Service -------------------
   auth-service:
@@ -48,6 +60,7 @@ services:
     container_name: auth-service
     depends_on:
       - user-service
+      - redis
     environment:
       DATABASE_DSN: ${DATABASE_DSN}
       JWT_SECRET: ${JWT_SECRET}
@@ -58,7 +71,7 @@ services:
     ports:
       - "8082:8082"
     networks:
-      - topup
+      - teamup
 
   # ------------------- KrakenD API Gateway -------------------
   krakend:
@@ -74,7 +87,7 @@ services:
     ports:
       - "8888:8888"
     networks:
-      - topup
+      - teamup
 
   # ------------------- Zookeeper -------------------
   zookeeper:
@@ -84,7 +97,7 @@ services:
     ports:
       - "2181:2181"
     networks:
-      - topup
+      - teamup
     healthcheck:
       test: ["CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok"]
       interval: 5s
@@ -104,7 +117,7 @@ services:
       zookeeper:
         condition: service_healthy
     networks:
-      - topup
+      - teamup
 
   # ------------------- Notification Service -------------------
   notification-service:
@@ -122,7 +135,7 @@ services:
     expose:
       - 9999
     networks:
-      - topup
+      - teamup
 
   # ------------------- TeamUp Application Service -------------------
   app-service:
@@ -137,14 +150,15 @@ services:
     ports:
       - "3001:3001"
     networks:
-      - topup
+      - teamup
     depends_on:
       - kafka
       - notification-service
 
 volumes:
   pgdata:
+  redis-data:
 
 networks:
-  topup:
+  teamup:
     driver: bridge

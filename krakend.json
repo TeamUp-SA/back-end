@@ -10,7 +10,7 @@
       "output_encoding": "no-op",
       "backend": [
         {
-          "url_pattern": "/{rest}",
+          "url_pattern": "/api/{rest}",
           "host": ["http://user-service:8081"]
         }
       ]
