@@ -1,0 +1,203 @@
+{
+  "info": {
+    "name": "TeamUp API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "teamup-api-collection"
+  },
+  "item": [
+    {
+      "name": "Bulletin",
+      "item": [
+        {
+          "name": "Get All Bulletins",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:3001/api/v1/bulletin/"
+          }
+        },
+        {
+          "name": "Get Bulletin by ID",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:3001/api/v1/bulletin/507f1f77bcf86cd799439011"
+          }
+        },
+        {
+          "name": "Get Bulletin by Author",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:3001/api/v1/bulletin/author/507f1f77bcf86cd799439012"
+          }
+        },
+        {
+          "name": "Get Bulletin by Group",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:3001/api/v1/bulletin/group/507f1f77bcf86cd799439013"
+          }
+        },
+        {
+          "name": "Create Bulletin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"authorID\": \"507f1f77bcf86cd799439011\",\n  \"title\": \"New Bulletin Title\",\n  \"content\": \"This is a sample bulletin content.\",\n  \"groupID\": \"507f1f77bcf86cd799439012\"\n}"
+            },
+            "url": "http://localhost:3001/api/v1/bulletin/"
+          }
+        },
+        {
+          "name": "Update Bulletin",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Bulletin Title\",\n  \"content\": \"Updated content of the bulletin.\",\n  \"groupID\": \"507f1f77bcf86cd799439013\"\n}"
+            },
+            "url": "http://localhost:3001/api/v1/bulletin/507f1f77bcf86cd799439011"
+          }
+        },
+        {
+          "name": "Delete Bulletin",
+          "request": {
+            "method": "DELETE",
+            "url": "http://localhost:3001/api/v1/bulletin/507f1f77bcf86cd799439011"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Group",
+      "item": [
+        {
+          "name": "Get All Groups",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:3001/api/v1/group/"
+          }
+        },
+        {
+          "name": "Get Group by ID",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:3001/api/v1/group/507f1f77bcf86cd799439011"
+          }
+        },
+        {
+          "name": "Get Group by Owner",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:3001/api/v1/group/owner/507f1f77bcf86cd799439012"
+          }
+        },
+        {
+          "name": "Create Group",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Developers Hangout\",\n  \"description\": \"A group for developers to discuss coding and projects.\",\n  \"ownerID\": \"507f1f77bcf86cd799439011\",\n  \"members\": [\n    \"507f1f77bcf86cd799439011\",\n    \"507f1f77bcf86cd799439012\"\n  ],\n  \"tags\": [\n    \"GOLANG\",\n    \"BACKEND\"\n  ],\n  \"closed\": false,\n  \"createdAt\": \"2025-10-14T10:50:22.958836\"\n}"
+            },
+            "url": "http://localhost:3001/api/v1/group/"
+          }
+        },
+        {
+          "name": "Update Group",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Group Title\",\n  \"description\": \"Updated group description.\",\n  \"ownerID\": \"507f1f77bcf86cd799439011\",\n  \"members\": [\n    \"507f1f77bcf86cd799439012\",\n    \"507f1f77bcf86cd799439013\"\n  ],\n  \"tags\": [\n    \"FULLSTACK\",\n    \"OPEN_SOURCE\"\n  ],\n  \"closed\": true,\n  \"createdAt\": \"2025-10-14T10:50:22.958890\"\n}"
+            },
+            "url": "http://localhost:3001/api/v1/group/507f1f77bcf86cd799439011"
+          }
+        },
+        {
+          "name": "Delete Group",
+          "request": {
+            "method": "DELETE",
+            "url": "http://localhost:3001/api/v1/group/507f1f77bcf86cd799439011"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Member",
+      "item": [
+        {
+          "name": "Get All Members",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:3001/api/v1/member/"
+          }
+        },
+        {
+          "name": "Get Member by ID",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:3001/api/v1/member/507f1f77bcf86cd799439011"
+          }
+        },
+        {
+          "name": "Register Member",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"ntcha\",\n  \"password\": \"securePass123\",\n  \"firstName\": \"Natcha\",\n  \"lastName\": \"Hungsapruek\",\n  \"email\": \"natcha@example.com\",\n  \"phoneNumber\": \"+66812345678\"\n}"
+            },
+            "url": "http://localhost:3001/api/v1/member/"
+          }
+        },
+        {
+          "name": "Update Member",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"ntcha_updated\",\n  \"firstName\": \"Natcha\",\n  \"lastName\": \"H.\",\n  \"email\": \"ntcha_updated@example.com\",\n  \"bio\": \"Aspiring software engineer and traveler.\",\n  \"skills\": [\n    \"Go\",\n    \"React\",\n    \"MongoDB\"\n  ],\n  \"linkedIn\": \"https://linkedin.com/in/ntcha\",\n  \"github\": \"https://github.com/Ntchah\",\n  \"website\": \"https://ntcha.dev\",\n  \"experience\": [\n    {\n      \"title\": \"Backend Intern\",\n      \"company\": \"TechCorp\",\n      \"startDate\": 2023,\n      \"endDate\": 2024\n    }\n  ],\n  \"education\": [\n    {\n      \"school\": \"ABC University\",\n      \"degree\": \"B.Eng\",\n      \"field\": \"Computer Engineering\",\n      \"startYear\": 2021,\n      \"endYear\": 2025\n    }\n  ]\n}"
+            },
+            "url": "http://localhost:3001/api/v1/member/507f1f77bcf86cd799439011"
+          }
+        }
+      ]
+    }
+  ]
+}

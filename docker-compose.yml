@@ -90,6 +90,7 @@ services:
       retries: 5
       timeout: 5s
 
+  # ------------------- Kafka -------------------
   kafka:
     image: wurstmeister/kafka
     container_name: kafka
@@ -109,10 +110,10 @@ services:
     build: ./notification-service
     container_name: notification-service
     environment:
-      MAILERSEND_SMTP_USER: "MS_BBVFQ8@test-zkq340e8z7kgd796.mlsender.net"
-      MAILERSEND_SMTP_PASS: "mssp.DTL4LFG.pxkjn41ry50gz781.23AXsZY"
-      MAILERSEND_SMTP_SERVER: "smtp.mailersend.net"
-      MAILERSEND_SMTP_PORT: "587"
+      MAILERSEND_SMTP_USER: ${MAILERSEND_SMTP_USER}
+      MAILERSEND_SMTP_PASS: ${MAILERSEND_SMTP_PASS}
+      MAILERSEND_SMTP_SERVER: ${MAILERSEND_SMTP_SERVER}
+      MAILERSEND_SMTP_PORT: ${MAILERSEND_SMTP_PORT}
     depends_on:
       - kafka
     ports:
@@ -121,6 +122,24 @@ services:
       - 9999
     networks:
       - topup
+
+  # ------------------- TeamUp Application Service -------------------
+  app-service:
+    build: ./app-service
+    image: app-service:latest
+    container_name: teamup-app-service
+    restart: always
+    environment:
+      APP_PORT: ${APP_PORT}
+      APP_ENV: ${APP_ENV}
+      MONGODB_URL: ${MONGODB_URL}
+    ports:
+      - "3001:3001"
+    networks:
+      - topup
+    depends_on:
+      - kafka
+      - notification-service
 
 volumes:
   pgdata:
