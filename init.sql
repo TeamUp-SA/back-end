@@ -1,6 +1,6 @@
-CREATE DATABASE "TopUp";
+CREATE DATABASE "TeamUp";
 
-\c "TopUp"
+\c "TeamUp"
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 

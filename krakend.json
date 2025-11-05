@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "name": "Topup Krakend Gateway",
+  "name": "Teamup Krakend API Gateway",
   "port": 8888,
   "cache_ttl": "300s",
   "timeout": "3000ms",
