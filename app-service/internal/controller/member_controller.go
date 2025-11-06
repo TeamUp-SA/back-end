@@ -180,20 +180,6 @@ func (s MemberController) UpdateMemberData(c *gin.Context) {
 		})
 		return
 	}
-	var groupMemberships []primitive.ObjectID
-	for _, m := range updatedMember.GroupMemberships {
-		id, err := primitive.ObjectIDFromHex(m)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
-				Success: false,
-				Status:  http.StatusInternalServerError,
-				Error:   "Invalid groupID format",
-				Message: err.Error(),
-			})
-			return
-		}
-		groupMemberships = append(groupMemberships, id)
-	}
 	var experienceModels []model.Experience
 	for _, e := range updatedMember.Experience {
 		expModel, err := converter.ExperienceDTOToModel(&e)
@@ -238,7 +224,6 @@ func (s MemberController) UpdateMemberData(c *gin.Context) {
 		ProfileImage:     updatedMember.ProfileImage,
 		Experience:       experienceModels,
 		Education:        educationModels,
-		GroupMemberships: groupMemberships,
 	})
 
 	if err != nil {

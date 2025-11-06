@@ -24,9 +24,6 @@ type Member struct {
 	// Experience Section
 	Experience []Experience `json:"experience,omitempty" bson:"experience,omitempty"`
 	Education  []Education  `json:"education,omitempty" bson:"education,omitempty"`
-
-	// Group participation
-	GroupMemberships []primitive.ObjectID `json:"groupMemberships,omitempty" bson:"groupMemberships,omitempty"`
 }
 
 // Work / project experience
