@@ -15,6 +15,7 @@ type Group struct {
 	Members     []primitive.ObjectID `json:"members"`
 	Tags        []grouptag.GroupTag  `json:"tags"`
 	Closed      bool                 `json:"closed"`
+	Date        string            `json:"date"`
 	CreatedAt   time.Time            `json:"createdAt"`
 }
 
@@ -25,6 +26,7 @@ type GroupCreateRequest struct {
 	Members     []primitive.ObjectID `json:"members"`
 	Tags        []grouptag.GroupTag  `json:"tags"`
 	Closed      bool                 `json:"closed"`
+	Date        string            `json:"date"`
 	CreatedAt   time.Time            `json:"createdAt"`
 }
 
@@ -35,5 +37,6 @@ type GroupUpdateRequest struct {
 	Members     []string            `json:"members"`
 	Tags        []grouptag.GroupTag `json:"tags"`
 	Closed      bool                `json:"closed"`
+	Date        string            `json:"date"`
 	CreatedAt   time.Time           `json:"createdAt"`
 }

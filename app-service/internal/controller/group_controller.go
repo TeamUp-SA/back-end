@@ -255,6 +255,7 @@ func (s GroupController) UpdateGroup(c *gin.Context) {
 		Members:     memberIDs,
 		Tags:        updatedGroup.Tags,
 		Closed:      updatedGroup.Closed,
+		Date:        updatedGroup.Date,
 		CreatedAt:   updatedGroup.CreatedAt,
 	})
 
