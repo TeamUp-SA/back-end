@@ -148,7 +148,7 @@ func (r BulletinRepository) UpdateBulletin(bulletinID primitive.ObjectID, update
 		"$set": bson.M{
 			"title": updatedBulletin.Title,
 			"description":  updatedBulletin.Description,
-			"groupID":  updatedBulletin.GroupID,
+			"group_id":  updatedBulletin.GroupID,
 			"date": updatedBulletin.Date,
 			"image": updatedBulletin.Image,
 			"tags": updatedBulletin.Tags,
