@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/Ntchah/TeamUp-application-service/internal/config"
-	"github.com/Ntchah/TeamUp-application-service/internal/database"
-	routes "github.com/Ntchah/TeamUp-application-service/internal/router"
+	"app-service/internal/config"
+	"app-service/internal/database"
+	routes "app-service/internal/router"
 	"github.com/gin-gonic/gin"
 )
 

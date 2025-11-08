@@ -2,12 +2,12 @@ package repository
 
 import (
 	"context"
-	"time"
 	"fmt"
+	"time"
 
-	"github.com/Ntchah/TeamUp-application-service/internal/dto"
-	"github.com/Ntchah/TeamUp-application-service/internal/model"
-	"github.com/Ntchah/TeamUp-application-service/pkg/utils/converter"
+	"app-service/internal/dto"
+	"app-service/internal/model"
+	"app-service/pkg/utils/converter"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -184,7 +184,6 @@ func (r BulletinRepository) UpdateBulletin(bulletinID primitive.ObjectID, req *d
 
 	return converter.BulletinModelToDTO(&updated)
 }
-
 
 func (r BulletinRepository) DeleteBulletin(bulletinID primitive.ObjectID) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)

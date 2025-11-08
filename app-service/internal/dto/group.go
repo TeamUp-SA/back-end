@@ -3,7 +3,7 @@ package dto
 import (
 	"time"
 
-	"github.com/Ntchah/TeamUp-application-service/internal/enum/grouptag"
+	"app-service/internal/enum/grouptag"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -15,7 +15,7 @@ type Group struct {
 	Members     []primitive.ObjectID `json:"members"`
 	Tags        []grouptag.GroupTag  `json:"tags"`
 	Closed      bool                 `json:"closed"`
-	Date        string            `json:"date"`
+	Date        string               `json:"date"`
 	CreatedAt   time.Time            `json:"createdAt"`
 }
 
@@ -26,7 +26,7 @@ type GroupCreateRequest struct {
 	Members     []primitive.ObjectID `json:"members"`
 	Tags        []grouptag.GroupTag  `json:"tags"`
 	Closed      bool                 `json:"closed"`
-	Date        string            `json:"date"`
+	Date        string               `json:"date"`
 }
 
 type GroupUpdateRequest struct {
@@ -35,5 +35,5 @@ type GroupUpdateRequest struct {
 	Members     *[]string            `json:"members"`
 	Tags        *[]grouptag.GroupTag `json:"tags"`
 	Closed      *bool                `json:"closed"`
-	Date        *string            `json:"date"`
+	Date        *string              `json:"date"`
 }

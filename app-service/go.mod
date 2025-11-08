@@ -1,4 +1,4 @@
-module github.com/Ntchah/TeamUp-application-service
+module app-service
 
 go 1.24.0
 

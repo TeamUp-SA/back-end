@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Ntchah/TeamUp-application-service/internal/dto"
-	"github.com/Ntchah/TeamUp-application-service/internal/model"
-	"github.com/Ntchah/TeamUp-application-service/pkg/utils/converter"
+	"app-service/internal/dto"
+	"app-service/internal/model"
+	"app-service/pkg/utils/converter"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

@@ -1,9 +1,13 @@
 package service
 
 import (
-	"github.com/Ntchah/TeamUp-application-service/internal/dto"
-	"github.com/Ntchah/TeamUp-application-service/internal/model"
-	"github.com/Ntchah/TeamUp-application-service/internal/repository"
+	"mime/multipart"
+
+	"app-service/internal/dto"
+	"app-service/internal/model"
+	"app-service/internal/repository"
+	"app-service/internal/utils"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -11,7 +15,7 @@ type IMemberService interface {
 	GetMemberByID(memberID primitive.ObjectID) (*dto.Member, error)
 	GetMember() ([]dto.Member, error)
 	CreateMemberData(member *model.Member) (*dto.Member, error)
-	UpdateMemberData(memberID primitive.ObjectID, updatedMember *model.Member) (*dto.Member, error)
+	UpdateMemberData(memberID primitive.ObjectID, updatedMember *model.Member, imageFile multipart.File, fileHeader *multipart.FileHeader) (*dto.Member, error)
 }
 
 type MemberService struct {
@@ -50,7 +54,14 @@ func (s MemberService) GetMember() ([]dto.Member, error) {
 	return members, nil
 }
 
-func (s MemberService) UpdateMemberData(memberID primitive.ObjectID, updatedMember *model.Member) (*dto.Member, error) {
+func (s MemberService) UpdateMemberData(memberID primitive.ObjectID, updatedMember *model.Member, imageFile multipart.File, fileHeader *multipart.FileHeader) (*dto.Member, error) {
+	if imageFile != nil && fileHeader != nil {
+		s3URL, err := utils.UploadFileToS3(imageFile, fileHeader)
+		if err != nil {
+			return nil, err
+		}
+		updatedMember.ProfileImage = s3URL
+	}
 
 	updatedMemberDTO, err := s.memberRepository.UpdateMemberData(memberID, updatedMember)
 	if err != nil {

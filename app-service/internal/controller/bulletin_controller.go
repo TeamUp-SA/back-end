@@ -1,11 +1,15 @@
 package controller
 
 import (
+	"encoding/json"
+	"errors"
+	"mime/multipart"
 	"net/http"
+	"strings"
 
-	"github.com/Ntchah/TeamUp-application-service/internal/dto"
-	"github.com/Ntchah/TeamUp-application-service/internal/model"
-	"github.com/Ntchah/TeamUp-application-service/internal/service"
+	"app-service/internal/dto"
+	"app-service/internal/model"
+	"app-service/internal/service"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -203,18 +207,82 @@ func (s BulletinController) GetBulletinsByGroupID(c *gin.Context) {
 //	@Router			/bulletin/ [post]
 func (s BulletinController) CreateBulletin(c *gin.Context) {
 	var newBulletin model.Bulletin
+	var imageFile multipart.File
+	var fileHeader *multipart.FileHeader
 
-	if err := c.BindJSON(&newBulletin); err != nil {
-		c.JSON(http.StatusBadRequest, dto.ErrorResponse{
-			Success: false,
-			Status:  http.StatusBadRequest,
-			Error:   "Invalid request body, failed to bind JSON",
-			Message: err.Error(),
-		})
-		return
+	contentType := c.GetHeader("Content-Type")
+
+	if strings.HasPrefix(contentType, "multipart/form-data") {
+		if err := c.Request.ParseMultipartForm(32 << 20); err != nil {
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusBadRequest,
+				Error:   "Invalid multipart form data",
+				Message: err.Error(),
+			})
+			return
+		}
+
+		payload := c.PostForm("bulletin")
+		if payload == "" {
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusBadRequest,
+				Error:   "Missing bulletin payload",
+				Message: "expected bulletin payload in multipart form field \"bulletin\"",
+			})
+			return
+		}
+
+		if err := json.Unmarshal([]byte(payload), &newBulletin); err != nil {
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusBadRequest,
+				Error:   "Invalid bulletin payload",
+				Message: err.Error(),
+			})
+			return
+		}
+
+		formHeader, err := c.FormFile("image")
+		if err != nil {
+			if !errors.Is(err, http.ErrMissingFile) {
+				c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+					Success: false,
+					Status:  http.StatusBadRequest,
+					Error:   "Invalid image upload",
+					Message: err.Error(),
+				})
+				return
+			}
+		} else {
+			file, err := formHeader.Open()
+			if err != nil {
+				c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+					Success: false,
+					Status:  http.StatusBadRequest,
+					Error:   "Unable to process image upload",
+					Message: err.Error(),
+				})
+				return
+			}
+			defer file.Close()
+			imageFile = file
+			fileHeader = formHeader
+		}
+	} else {
+		if err := c.ShouldBindJSON(&newBulletin); err != nil {
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusBadRequest,
+				Error:   "Invalid request body, failed to bind JSON",
+				Message: err.Error(),
+			})
+			return
+		}
 	}
 
-	res, err := s.bulletinService.CreateBulletin(&newBulletin)
+	res, err := s.bulletinService.CreateBulletin(&newBulletin, imageFile, fileHeader)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
@@ -259,17 +327,82 @@ func (s BulletinController) UpdateBulletin(c *gin.Context) {
 		return
 	}
 	var updateReq dto.BulletinUpdateRequest
-	if err := c.BindJSON(&updateReq); err != nil {
-		c.JSON(http.StatusBadRequest, dto.ErrorResponse{
-			Success: false,
-			Status:  http.StatusBadRequest,
-			Error:   "Invalid request body, failed to bind JSON",
-			Message: err.Error(),
-		})
-		return
+	var imageFile multipart.File
+	var fileHeader *multipart.FileHeader
+
+	contentType := c.GetHeader("Content-Type")
+
+	if strings.HasPrefix(contentType, "multipart/form-data") {
+		if err := c.Request.ParseMultipartForm(32 << 20); err != nil {
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusBadRequest,
+				Error:   "Invalid multipart form data",
+				Message: err.Error(),
+			})
+			return
+		}
+
+		payload := c.PostForm("bulletin")
+		if payload == "" {
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusBadRequest,
+				Error:   "Missing bulletin payload",
+				Message: "expected bulletin payload in multipart form field \"bulletin\"",
+			})
+			return
+		}
+
+		if err := json.Unmarshal([]byte(payload), &updateReq); err != nil {
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusBadRequest,
+				Error:   "Invalid bulletin payload",
+				Message: err.Error(),
+			})
+			return
+		}
+
+		formHeader, err := c.FormFile("image")
+		if err != nil {
+			if !errors.Is(err, http.ErrMissingFile) {
+				c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+					Success: false,
+					Status:  http.StatusBadRequest,
+					Error:   "Invalid image upload",
+					Message: err.Error(),
+				})
+				return
+			}
+		} else {
+			file, err := formHeader.Open()
+			if err != nil {
+				c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+					Success: false,
+					Status:  http.StatusBadRequest,
+					Error:   "Unable to process image upload",
+					Message: err.Error(),
+				})
+				return
+			}
+			defer file.Close()
+			imageFile = file
+			fileHeader = formHeader
+		}
+	} else {
+		if err := c.ShouldBindJSON(&updateReq); err != nil {
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusBadRequest,
+				Error:   "Invalid request body, failed to bind JSON",
+				Message: err.Error(),
+			})
+			return
+		}
 	}
 
-	res, err := s.bulletinService.UpdateBulletin(bulletinID, &updateReq)
+	res, err := s.bulletinService.UpdateBulletin(bulletinID, &updateReq, imageFile, fileHeader)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{

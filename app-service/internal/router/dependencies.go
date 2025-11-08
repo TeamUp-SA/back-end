@@ -1,10 +1,10 @@
 package router
 
 import (
-	"github.com/Ntchah/TeamUp-application-service/internal/config"
-	"github.com/Ntchah/TeamUp-application-service/internal/controller"
-	"github.com/Ntchah/TeamUp-application-service/internal/repository"
-	"github.com/Ntchah/TeamUp-application-service/internal/service"
+	"app-service/internal/config"
+	"app-service/internal/controller"
+	"app-service/internal/repository"
+	"app-service/internal/service"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 

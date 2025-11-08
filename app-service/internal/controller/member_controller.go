@@ -1,12 +1,17 @@
 package controller
 
 import (
+	"encoding/json"
+	"errors"
+	"mime/multipart"
 	"net/http"
+	"strings"
 
-	"github.com/Ntchah/TeamUp-application-service/internal/dto"
-	"github.com/Ntchah/TeamUp-application-service/internal/model"
-	"github.com/Ntchah/TeamUp-application-service/internal/service"
-	"github.com/Ntchah/TeamUp-application-service/pkg/utils/converter"
+	"app-service/internal/dto"
+	"app-service/internal/model"
+	"app-service/internal/service"
+	"app-service/pkg/utils/converter"
+
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -170,18 +175,84 @@ func (s MemberController) UpdateMemberData(c *gin.Context) {
 		})
 		return
 	}
-	var updatedMember dto.MemberUpdateRequest
-	if err := c.BindJSON(&updatedMember); err != nil {
-		c.JSON(http.StatusBadRequest, dto.ErrorResponse{
-			Success: false,
-			Status:  http.StatusBadRequest,
-			Error:   "Invalid request body, failed to bind JSON",
-			Message: err.Error(),
-		})
-		return
+	var updateReq dto.MemberUpdateRequest
+	var imageFile multipart.File
+	var fileHeader *multipart.FileHeader
+
+	contentType := c.GetHeader("Content-Type")
+
+	if strings.HasPrefix(contentType, "multipart/form-data") {
+		if err := c.Request.ParseMultipartForm(32 << 20); err != nil {
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusBadRequest,
+				Error:   "Invalid multipart form data",
+				Message: err.Error(),
+			})
+			return
+		}
+
+		payload := c.PostForm("member")
+		if payload == "" {
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusBadRequest,
+				Error:   "Missing member payload",
+				Message: "expected member payload in multipart form field \"member\"",
+			})
+			return
+		}
+
+		if err := json.Unmarshal([]byte(payload), &updateReq); err != nil {
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusBadRequest,
+				Error:   "Invalid member payload",
+				Message: err.Error(),
+			})
+			return
+		}
+
+		formHeader, err := c.FormFile("image")
+		if err != nil {
+			if !errors.Is(err, http.ErrMissingFile) {
+				c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+					Success: false,
+					Status:  http.StatusBadRequest,
+					Error:   "Invalid image upload",
+					Message: err.Error(),
+				})
+				return
+			}
+		} else {
+			file, err := formHeader.Open()
+			if err != nil {
+				c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+					Success: false,
+					Status:  http.StatusBadRequest,
+					Error:   "Unable to process image upload",
+					Message: err.Error(),
+				})
+				return
+			}
+			defer file.Close()
+			imageFile = file
+			fileHeader = formHeader
+		}
+	} else {
+		if err := c.ShouldBindJSON(&updateReq); err != nil {
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusBadRequest,
+				Error:   "Invalid request body, failed to bind JSON",
+				Message: err.Error(),
+			})
+			return
+		}
 	}
+
 	var experienceModels []model.Experience
-	for _, e := range updatedMember.Experience {
+	for _, e := range updateReq.Experience {
 		expModel, err := converter.ExperienceDTOToModel(&e)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
@@ -194,8 +265,9 @@ func (s MemberController) UpdateMemberData(c *gin.Context) {
 		}
 		experienceModels = append(experienceModels, *expModel)
 	}
+
 	var educationModels []model.Education
-	for _, e := range updatedMember.Education {
+	for _, e := range updateReq.Education {
 		eduModel, err := converter.EducationDTOToModel(&e)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
@@ -208,23 +280,24 @@ func (s MemberController) UpdateMemberData(c *gin.Context) {
 		}
 		educationModels = append(educationModels, *eduModel)
 	}
+
 	res, err := s.memberService.UpdateMemberData(memberID, &model.Member{
-		MemberID:         memberID,
-		Username:         updatedMember.Username,
-		Password:         updatedMember.Password,
-		FirstName:        updatedMember.FirstName,
-		LastName:         updatedMember.LastName,
-		Email:            updatedMember.Email,
-		PhoneNumber:      updatedMember.PhoneNumber,
-		Bio:              updatedMember.Bio,
-		Skills:           updatedMember.Skills,
-		LinkedIn:         updatedMember.LinkedIn,
-		GitHub:           updatedMember.GitHub,
-		Website:          updatedMember.Website,
-		ProfileImage:     updatedMember.ProfileImage,
-		Experience:       experienceModels,
-		Education:        educationModels,
-	})
+		MemberID:     memberID,
+		Username:     updateReq.Username,
+		Password:     updateReq.Password,
+		FirstName:    updateReq.FirstName,
+		LastName:     updateReq.LastName,
+		Email:        updateReq.Email,
+		PhoneNumber:  updateReq.PhoneNumber,
+		Bio:          updateReq.Bio,
+		Skills:       updateReq.Skills,
+		LinkedIn:     updateReq.LinkedIn,
+		GitHub:       updateReq.GitHub,
+		Website:      updateReq.Website,
+		ProfileImage: updateReq.ProfileImage,
+		Experience:   experienceModels,
+		Education:    educationModels,
+	}, imageFile, fileHeader)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{

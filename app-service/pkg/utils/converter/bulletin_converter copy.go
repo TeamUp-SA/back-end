@@ -3,8 +3,9 @@ package converter
 import (
 	"errors"
 
-	"github.com/Ntchah/TeamUp-application-service/internal/dto"
-	"github.com/Ntchah/TeamUp-application-service/internal/model"
+	"app-service/internal/dto"
+	"app-service/internal/model"
+
 	"github.com/jinzhu/copier"
 )
 

@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"github.com/Ntchah/TeamUp-application-service/internal/dto"
-	"github.com/Ntchah/TeamUp-application-service/internal/model"
-	"github.com/Ntchah/TeamUp-application-service/internal/service"
+	"app-service/internal/dto"
+	"app-service/internal/model"
+	"app-service/internal/service"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -242,6 +242,7 @@ func (s GroupController) UpdateGroup(c *gin.Context) {
 		Data:    res,
 	})
 }
+
 // DeleteGroup godoc
 //
 //	@Summary		Delete a group by ID
