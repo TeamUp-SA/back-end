@@ -7,6 +7,7 @@ import (
 
 	docs "app-service/docs"
 	"app-service/internal/config"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
@@ -50,7 +51,7 @@ func (r *Router) Run(mongoDB *mongo.Database) {
 	r.g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	// versioning
-	v1 := r.g.Group("/api/v1")
+	v1 := r.g.Group("")
 
 	// setup
 	r.deps = NewDependencies(mongoDB, r.conf)

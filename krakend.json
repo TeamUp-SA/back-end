@@ -16,14 +16,24 @@
       ]
     },
     {
+      "endpoint": "/user/{rest}",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/api/{rest}",
+          "host": ["http://user-service:8081"],
+          "method": "POST"
+        }
+      ]
+    },
+    {
       "endpoint": "/auth/{rest}",
-      "method": "GET",
       "output_encoding": "no-op",
       "backend": [
         {
           "url_pattern": "/{rest}",
-          "host": ["http://auth-service:8082"],
-          "method": "GET"
+          "host": ["http://auth-service:8082"]
         }
       ]
     },
@@ -40,12 +50,368 @@
       ]
     },
     {
-      "endpoint": "/app/{rest}",
+      "endpoint": "/application/{rest}",
+      "method": "GET",
       "output_encoding": "no-op",
       "backend": [
         {
-          "url_pattern": "/api/v1/{rest}",
+          "url_pattern": "/{rest}",
+          "host": ["http://app-service:3001"],
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "endpoint": "/application/{rest}",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/{rest}",
+          "host": ["http://app-service:3001"],
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "endpoint": "/group/{rest}",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group/{rest}",
           "host": ["http://app-service:3001"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/group/{rest}",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group/{rest}",
+          "host": ["http://app-service:3001"],
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "endpoint": "/group/{rest}",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group/{rest}",
+          "host": ["http://app-service:3001"],
+          "method": "PUT"
+        }
+      ]
+    },
+    {
+      "endpoint": "/group/{rest}",
+      "method": "DELETE",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group/{rest}",
+          "host": ["http://app-service:3001"],
+          "method": "DELETE"
+        }
+      ]
+    },
+    {
+      "endpoint": "/group",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group",
+          "host": ["http://app-service:3001"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/group",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group",
+          "host": ["http://app-service:3001"],
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "endpoint": "/group/",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group/",
+          "host": ["http://app-service:3001"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/group/",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group/",
+          "host": ["http://app-service:3001"],
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "endpoint": "/group/",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group/",
+          "host": ["http://app-service:3001"],
+          "method": "PUT"
+        }
+      ]
+    },
+    {
+      "endpoint": "/group/",
+      "method": "DELETE",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group/",
+          "host": ["http://app-service:3001"],
+          "method": "DELETE"
+        }
+      ]
+    },
+    {
+      "endpoint": "/bulletin/{rest}",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/bulletin/{rest}",
+          "host": ["http://app-service:3001"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/bulletin/{rest}",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/bulletin/{rest}",
+          "host": ["http://app-service:3001"],
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "endpoint": "/bulletin/{rest}",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/bulletin/{rest}",
+          "host": ["http://app-service:3001"],
+          "method": "PUT"
+        }
+      ]
+    },
+    {
+      "endpoint": "/bulletin/{rest}",
+      "method": "DELETE",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/bulletin/{rest}",
+          "host": ["http://app-service:3001"],
+          "method": "DELETE"
+        }
+      ]
+    },
+    {
+      "endpoint": "/bulletin",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/bulletin",
+          "host": ["http://app-service:3001"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/bulletin",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/bulletin",
+          "host": ["http://app-service:3001"],
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "endpoint": "/bulletin/",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/bulletin/",
+          "host": ["http://app-service:3001"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/bulletin/",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/bulletin/",
+          "host": ["http://app-service:3001"],
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "endpoint": "/bulletin/",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/bulletin/",
+          "host": ["http://app-service:3001"],
+          "method": "PUT"
+        }
+      ]
+    },
+    {
+      "endpoint": "/bulletin/",
+      "method": "DELETE",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/bulletin/",
+          "host": ["http://app-service:3001"],
+          "method": "DELETE"
+        }
+      ]
+    },
+    {
+      "endpoint": "/member/{rest}",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/member/{rest}",
+          "host": ["http://app-service:3001"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/member/{rest}",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/member/{rest}",
+          "host": ["http://app-service:3001"],
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "endpoint": "/member/{rest}",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/member/{rest}",
+          "host": ["http://app-service:3001"],
+          "method": "PUT"
+        }
+      ]
+    },
+    {
+      "endpoint": "/member/{rest}",
+      "method": "DELETE",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/member/{rest}",
+          "host": ["http://app-service:3001"],
+          "method": "DELETE"
+        }
+      ]
+    },
+    {
+      "endpoint": "/member",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/member",
+          "host": ["http://app-service:3001"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/member",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/member",
+          "host": ["http://app-service:3001"],
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "endpoint": "/member/",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/member/",
+          "host": ["http://app-service:3001"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/member/",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/member/",
+          "host": ["http://app-service:3001"],
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "endpoint": "/member/",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/member/",
+          "host": ["http://app-service:3001"],
+          "method": "PUT"
+        }
+      ]
+    },
+    {
+      "endpoint": "/member/",
+      "method": "DELETE",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/member/",
+          "host": ["http://app-service:3001"],
+          "method": "DELETE"
         }
       ]
     }
@@ -53,9 +419,9 @@
   "extra_config": {
     "github_com/devopsfaith/krakend-cors": {
       "allow_origins": ["http://localhost:3000", "http://localhost:3001"],
-      "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      "allow_headers": ["Origin", "Authorization", "Content-Type"],
-      "expose_headers": ["Content-Length"],
+      "allow_methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+      "allow_headers": ["Origin", "Authorization", "Content-Type", "Accept"],
+      "expose_headers": ["Content-Length", "Content-Type"],
       "max_age": "12h",
       "allow_credentials": true
     },
@@ -63,6 +429,9 @@
       "read_timeout": "10s",
       "write_timeout": "10s",
       "idle_timeout": "60s"
+    },
+    "github_com/devopsfaith/krakend/proxy": {
+      "sequential": false
     }
   }
 }
