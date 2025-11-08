@@ -1,9 +1,9 @@
 package user
 
 import (
-    "time"
+	"time"
 
-    "github.com/google/uuid"
+	"github.com/google/uuid"
 )
 
 type User struct {
@@ -16,6 +16,7 @@ type User struct {
     Password        string    `gorm:"type:text"`
     OAuthProvider   string    `gorm:"type:varchar(50)"`
     OAuthProviderID string    `gorm:"type:varchar(255)"`
+    ImageUrl        string    `gorm:"type:varchar(255)"`
 
     CreatedAt time.Time
     UpdatedAt time.Time

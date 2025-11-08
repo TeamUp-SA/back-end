@@ -46,6 +46,10 @@ services:
     environment:
       DATABASE_DSN: ${DATABASE_DSN}
       JWT_SECRET: ${JWT_SECRET}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      S3_REGION: ${S3_REGION}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
     ports:
       - "8081:8081"
     networks:
@@ -147,6 +151,10 @@ services:
       APP_PORT: ${APP_PORT}
       APP_ENV: ${APP_ENV}
       MONGODB_URL: ${MONGODB_URL}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      S3_REGION: ${S3_REGION}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
     ports:
       - "3001:3001"
     networks:
