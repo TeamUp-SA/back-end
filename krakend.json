@@ -17,11 +17,25 @@
     },
     {
       "endpoint": "/auth/{rest}",
+      "method": "GET",
       "output_encoding": "no-op",
       "backend": [
         {
           "url_pattern": "/{rest}",
-          "host": ["http://auth-service:8082"]
+          "host": ["http://auth-service:8082"],
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "endpoint": "/auth/{rest}",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/{rest}",
+          "host": ["http://auth-service:8082"],
+          "method": "POST"
         }
       ]
     },
@@ -38,7 +52,7 @@
   ],
   "extra_config": {
     "github_com/devopsfaith/krakend-cors": {
-      "allow_origins": ["*"],
+      "allow_origins": ["http://localhost:3000", "http://localhost:3001"],
       "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       "allow_headers": ["Origin", "Authorization", "Content-Type"],
       "expose_headers": ["Content-Length"],
