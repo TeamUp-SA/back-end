@@ -12,47 +12,46 @@ import (
 )
 
 type NotificationMessage struct {
-    Type    string `json:"type"`
-    To      string `json:"to"`
-    Message string `json:"message"`
+	Type    string `json:"type"`
+	To      string `json:"to"`
+	Subject string `json:"subject"`
+	Message string `json:"message"`
 }
 
 type Consumer struct {
-    reader *kafka.Reader
+	reader *kafka.Reader
 }
 
 func NewConsumer(broker, topic, groupID string) (*Consumer, error) {
-    r := kafka.NewReader(kafka.ReaderConfig{
-        Brokers: []string{broker},
-        Topic:   topic,
-        GroupID: groupID,
-    })
-    return &Consumer{reader: r}, nil
+	r := kafka.NewReader(kafka.ReaderConfig{
+		Brokers: []string{broker},
+		Topic:   topic,
+		GroupID: groupID,
+	})
+	return &Consumer{reader: r}, nil
 }
 
 func (c *Consumer) ConsumeMessages() {
-    for {
-        m, err := c.reader.ReadMessage(context.Background())
-        if err != nil {
-            log.Printf("error reading message: %v", err)
-            continue
-        }
+	for {
+		m, err := c.reader.ReadMessage(context.Background())
+		if err != nil {
+			log.Printf("error reading message: %v", err)
+			continue
+		}
 
-        var msg NotificationMessage
-        if err := json.Unmarshal(m.Value, &msg); err != nil {
-            log.Printf("invalid message format: %v", err)
-            continue
-        }
+		var msg NotificationMessage
+		if err := json.Unmarshal(m.Value, &msg); err != nil {
+			log.Printf("invalid message format: %v", err)
+			continue
+		}
 
-        log.Printf("Received notification: %+v", msg)
+		log.Printf("Received notification: %+v", msg)
 
-        switch msg.Type {
-        case "email":
-            notifier.SendEmail(msg.To, msg.Message)
-        case "push":
-            notifier.SendPush("Alert", msg.Message)
-        default:
-            fmt.Printf("unknown type: %s\n", msg.Type)
-        }
-    }
+		switch msg.Type {
+		case "email":
+			notifier.SendEmail(msg.To, msg.Subject, msg.Message)
+		default:
+			fmt.Printf("unknown type: %s\n", msg.Type)
+		}
+	}
 }

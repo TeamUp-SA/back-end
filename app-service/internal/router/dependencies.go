@@ -1,10 +1,14 @@
 package router
 
 import (
+	"fmt"
+
 	"app-service/internal/config"
 	"app-service/internal/controller"
+	"app-service/internal/kafka"
 	"app-service/internal/repository"
 	"app-service/internal/service"
+
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -29,9 +33,15 @@ func NewDependencies(mongoDB *mongo.Database, conf *config.Config) *Dependencies
 	groupRepo := repository.NewGroupRepository(mongoDB, "groups")
 	memberRepo := repository.NewMemberRepository(mongoDB, "members")
 
+	// Initialize producers
+	notificationProducer, err := kafka.NewNotificationProducer(conf.Kafka.Broker, conf.Kafka.NotificationTopic)
+	if err != nil {
+		panic(fmt.Sprintf("failed to initialise notification producer: %v", err))
+	}
+
 	// Initialize services
 	bulletinService := service.NewBulletinService(bulletinRepo)
-	groupService := service.NewGroupService(groupRepo)
+	groupService := service.NewGroupService(groupRepo, memberRepo, notificationProducer)
 	memberService := service.NewMemberService(memberRepo)
 
 	// Initialize controllers
