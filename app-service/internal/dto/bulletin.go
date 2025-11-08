@@ -30,10 +30,10 @@ type BulletinCreateRequest struct {
 }
 
 type BulletinUpdateRequest struct {
-	Title       string               `json:"title"`
-	Description string               `json:"description"`
-	GroupID     []primitive.ObjectID `json:"groupID,omitempty"`
-	Date        string            `json:"date"`
-	Image       string               `json:"image"`
-	Tags        []grouptag.GroupTag  `json:"tags"`
+	Title       *string               `json:"title,omitempty"`
+	Description *string               `json:"description,omitempty"`
+	GroupID     *[]primitive.ObjectID `json:"groupID,omitempty"`
+	Date        *string               `json:"date,omitempty"`
+	Image       *string               `json:"image,omitempty"`
+	Tags        *[]grouptag.GroupTag  `json:"tags,omitempty"`
 }
