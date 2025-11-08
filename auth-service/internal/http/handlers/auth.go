@@ -503,7 +503,7 @@ func (h *Handler) memberEndpoint() string {
 	if base == "" {
 		return ""
 	}
-	return base + "/api/v1/member/"
+	return base + "/member/"
 }
 
 func sanitizeSkills(in []string) []string {

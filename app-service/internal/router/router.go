@@ -47,7 +47,7 @@ func (r *Router) Run(mongoDB *mongo.Database) {
 	})
 
 	// Swagger setting
-	docs.SwaggerInfo.BasePath = "/api/v1"
+	docs.SwaggerInfo.BasePath = ""
 	r.g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	// versioning

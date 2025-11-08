@@ -22,7 +22,6 @@ func LoadConfig() *Config {
 	}
 }
 
-// helper to get env var or default
 func getEnv(key, defaultVal string) string {
 	if val, exists := os.LookupEnv(key); exists {
 		return val

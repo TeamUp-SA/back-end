@@ -6,6 +6,7 @@ import (
 	"app-service/internal/dto"
 	"app-service/internal/model"
 	"app-service/internal/service"
+
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -283,3 +284,4 @@ func (s GroupController) DeleteGroup(c *gin.Context) {
 		Message: "Delete group success",
 	})
 }
+

@@ -1,30 +1,95 @@
 package notifier
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
 	"log"
-	"net/smtp"
+	"net/http"
 	"os"
+	"strings"
+	"time"
 )
 
-func SendEmail(to, message string) {
-	from := "MS_BBVFQ8@test-zkq340e8z7kgd796.mlsender.net"
-	smtpHost := os.Getenv("MAILERSEND_SMTP_SERVER")
-	smtpPort := os.Getenv("MAILERSEND_SMTP_PORT")
-	smtpUser := os.Getenv("MAILERSEND_SMTP_USER")
-	smtpPass := os.Getenv("MAILERSEND_SMTP_PASS")
+const (
+	mailerSendEndpoint    = "https://api.mailersend.com/v1/email"
+	hardcodedEmailAddress = "dalai2547@gmail.com"
+)
 
-	auth := smtp.PlainAuth("", smtpUser, smtpPass, smtpHost)
+type mailerSendAddress struct {
+	Email string `json:"email"`
+	Name  string `json:"name,omitempty"`
+}
 
-	msg := []byte("To: " + to + "\r\n" +
-		"Subject: Notification\r\n" +
-		"\r\n" +
-		message + "\r\n")
+type mailerSendEmailRequest struct {
+	From     mailerSendAddress   `json:"from"`
+	To       []mailerSendAddress `json:"to"`
+	Subject  string              `json:"subject"`
+	Text     string              `json:"text,omitempty"`
+	HTML     string              `json:"html,omitempty"`
+	ReplyTo  *mailerSendAddress  `json:"reply_to,omitempty"`
+	Personal string              `json:"personalization,omitempty"`
+}
 
-	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{to}, msg)
-	if err != nil {
-		log.Println("Failed to send email:", err)
+var httpClient = &http.Client{
+	Timeout: 15 * time.Second,
+}
+
+func SendEmail(_ string, subject, message string) {
+	apiKey := strings.TrimSpace(os.Getenv("MAILERSEND_API_KEY"))
+	if apiKey == "" {
+		log.Println("MAILERSEND_API_KEY is not set; skipping email send")
 		return
 	}
 
-	log.Printf("[EMAIL] to=%s message=%s sent successfully!", to, message)
+	fromEmail := strings.TrimSpace(os.Getenv("MAILERSEND_FROM_EMAIL"))
+	if fromEmail == "" {
+		fromEmail = hardcodedEmailAddress
+	}
+
+	emailSubject := subject
+	if strings.TrimSpace(emailSubject) == "" {
+		emailSubject = "Notification"
+	}
+
+	payload := mailerSendEmailRequest{
+		From: mailerSendAddress{
+			Email: fromEmail,
+		},
+		To: []mailerSendAddress{
+			{Email: hardcodedEmailAddress},
+		},
+		Subject: emailSubject,
+		Text:    message,
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		log.Printf("Failed to marshal MailerSend payload: %v", err)
+		return
+	}
+
+	req, err := http.NewRequest(http.MethodPost, mailerSendEndpoint, bytes.NewReader(body))
+	if err != nil {
+		log.Printf("Failed to create MailerSend request: %v", err)
+		return
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", apiKey))
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		log.Printf("MailerSend request error: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 300 {
+		responseBody, _ := io.ReadAll(resp.Body)
+		log.Printf("MailerSend request failed: status=%d body=%s", resp.StatusCode, strings.TrimSpace(string(responseBody)))
+		return
+	}
+
+	log.Printf("[EMAIL] to=%s subject=%s message=%s sent successfully via MailerSend API!", hardcodedEmailAddress, emailSubject, message)
 }

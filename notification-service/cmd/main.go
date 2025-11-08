@@ -15,13 +15,14 @@ import (
 	type Message struct {
 		Type    string `json:"type"`
 		To      string `json:"to"`
+		Subject string `json:"subject"`
 		Message string `json:"message"`
 	}
 
 	func main() {
 		broker := os.Getenv("KAFKA_BROKER")
 		if broker == "" {
-			broker = "kafka:9092" 
+			broker = "kafka:9092"
 		}
 
 		topic := os.Getenv("KAFKA_TOPIC")
@@ -75,14 +76,12 @@ import (
 
 			switch m.Type {
 			case "email":
-				notifier.SendEmail(m.To, m.Message)
-			case "push":
-				notifier.SendPush("This is Kafka message!", m.Message)
+				notifier.SendEmail(m.To, m.Subject, m.Message)
 			default:
 				log.Println("Unknown message type:", m.Type)
 			}
 		}
 	}
 
-// {"type": "email", "to": "dalai2547@gmail.com", "message": "Hello from Kafka email test!"}
+// {"type": "email", "to": "dalai2547@gmail.com", "subject": "Test", "message": "Hello from Kafka email test!"}
 // {"type": "push", "to": "test_user", "message": "You got a new Kafka push message!"}

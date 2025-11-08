@@ -7,6 +7,7 @@ import (
 	"app-service/internal/dto"
 	"app-service/internal/model"
 	"app-service/pkg/utils/converter"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,6 +16,7 @@ import (
 type IMemberRepository interface {
 	GetMember() ([]dto.Member, error)
 	GetMemberByID(memberID primitive.ObjectID) (*dto.Member, error)
+	GetMembersByIDs(memberIDs []primitive.ObjectID) ([]dto.Member, error)
 	CreateMemberData(member *model.Member) (*dto.Member, error)
 	GetMemberByUsername(username string) (*model.Member, error)
 	UpdateMemberData(memberID primitive.ObjectID, updatedMember *model.Member) (*dto.Member, error)
@@ -68,6 +70,43 @@ func (r *MemberRepository) GetMember() ([]dto.Member, error) {
 	}
 
 	return memberList, nil
+}
+
+func (r *MemberRepository) GetMembersByIDs(memberIDs []primitive.ObjectID) ([]dto.Member, error) {
+	if len(memberIDs) == 0 {
+		return []dto.Member{}, nil
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": bson.M{"$in": memberIDs}}
+	cursor, err := r.memberCollection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	members := make([]dto.Member, 0, len(memberIDs))
+	for cursor.Next(ctx) {
+		var memberModel model.Member
+		if err := cursor.Decode(&memberModel); err != nil {
+			return nil, err
+		}
+
+		memberDTO, convertErr := converter.MemberModelToDTO(&memberModel)
+		if convertErr != nil {
+			return nil, convertErr
+		}
+
+		members = append(members, *memberDTO)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return members, nil
 }
 
 func (r *MemberRepository) GetMemberByUsername(username string) (*model.Member, error) {

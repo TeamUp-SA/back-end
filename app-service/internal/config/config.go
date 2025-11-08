@@ -16,9 +16,15 @@ type DbConfig struct {
 	MongoURL string
 }
 
+type KafkaConfig struct {
+	Broker           string
+	NotificationTopic string
+}
+
 type Config struct {
 	App AppConfig
 	Db  DbConfig
+	Kafka KafkaConfig
 }
 
 func LoadConfig() (*Config, error) {
@@ -43,8 +49,21 @@ func LoadConfig() (*Config, error) {
 		MongoURL: os.Getenv("MONGODB_URL"),
 	}
 
+	kafkaConfig := KafkaConfig{
+		Broker:           getEnv("KAFKA_BROKER", "kafka:9092"),
+		NotificationTopic: getEnv("KAFKA_TOPIC", "notifications"),
+	}
+
 	return &Config{
-		App: appConfig,
-		Db:  dbConfig,
+		App:   appConfig,
+		Db:    dbConfig,
+		Kafka: kafkaConfig,
 	}, nil
+}
+
+func getEnv(key, fallback string) string {
+	if value, exists := os.LookupEnv(key); exists && value != "" {
+		return value
+	}
+	return fallback
 }
