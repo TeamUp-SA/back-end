@@ -31,12 +31,11 @@ type GroupCreateRequest struct {
 }
 
 type GroupUpdateRequest struct {
-	Title       string              `json:"title"`
-	Description string              `json:"description"`
-	OwnerID     string              `json:"ownerID"`
-	Members     []string            `json:"members"`
-	Tags        []grouptag.GroupTag `json:"tags"`
-	Closed      bool                `json:"closed"`
-	Date        string            `json:"date"`
-	CreatedAt   time.Time           `json:"createdAt"`
+	Title       *string              `json:"title"`
+	Description *string              `json:"description"`
+	Members     *[]string            `json:"members"`
+	Tags        *[]grouptag.GroupTag `json:"tags"`
+	Closed      *bool                `json:"closed"`
+	Date        *string            `json:"date"`
+	CreatedAt   *time.Time           `json:"createdAt"`
 }

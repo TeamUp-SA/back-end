@@ -213,8 +213,8 @@ func (s GroupController) UpdateGroup(c *gin.Context) {
 		})
 		return
 	}
-	var updatedGroup dto.GroupUpdateRequest
-	if err := c.BindJSON(&updatedGroup); err != nil {
+	var updateReq dto.GroupUpdateRequest
+	if err := c.BindJSON(&updateReq); err != nil {
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{
 			Success: false,
 			Status:  http.StatusBadRequest,
@@ -223,49 +223,15 @@ func (s GroupController) UpdateGroup(c *gin.Context) {
 		})
 		return
 	}
-	ownerID, err := primitive.ObjectIDFromHex(updatedGroup.OwnerID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.ErrorResponse{
-			Success: false,
-			Status:  http.StatusInternalServerError,
-			Error:   "Invalid groupID format",
-			Message: err.Error(),
-		})
-		return
-	}
-	var memberIDs []primitive.ObjectID
-	for _, m := range updatedGroup.Members {
-		id, err := primitive.ObjectIDFromHex(m)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
-				Success: false,
-				Status:  http.StatusInternalServerError,
-				Error:   "Invalid memberID format",
-				Message: err.Error(),
-			})
-			return
-		}
-		memberIDs = append(memberIDs, id)
-	}
-	res, err := s.groupService.UpdateGroup(groupID, &model.Group{
-		GroupID:     groupID,
-		Title:       updatedGroup.Title,
-		Description: updatedGroup.Description,
-		OwnerID:     ownerID,
-		Members:     memberIDs,
-		Tags:        updatedGroup.Tags,
-		Closed:      updatedGroup.Closed,
-		Date:        updatedGroup.Date,
-		CreatedAt:   updatedGroup.CreatedAt,
-	})
+
+	res, err := s.groupService.UpdateGroup(groupID, &updateReq)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Status:  http.StatusInternalServerError,
 			Error:   "Failed to update group data",
-			Message: err.Error(),
-		})
+			Message: err.Error()})
 		return
 	}
 
@@ -276,7 +242,6 @@ func (s GroupController) UpdateGroup(c *gin.Context) {
 		Data:    res,
 	})
 }
-
 // DeleteGroup godoc
 //
 //	@Summary		Delete a group by ID

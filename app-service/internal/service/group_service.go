@@ -12,7 +12,7 @@ type IGroupService interface {
 	GetGroupsByOwnerID(ownerID primitive.ObjectID) ([]dto.Group, error)
 	GetGroups() ([]dto.Group, error)
 	CreateGroup(group *model.Group) (*dto.Group, error)
-	UpdateGroup(groupID primitive.ObjectID, updatedGroup *model.Group) (*dto.Group, error)
+	UpdateGroup(groupID primitive.ObjectID, updatedGroup *dto.GroupUpdateRequest) (*dto.Group, error)
 	DeleteGroup(groupID primitive.ObjectID) error
 }
 
@@ -59,7 +59,7 @@ func (s GroupService) GetGroups() ([]dto.Group, error) {
 	return groups, nil
 }
 
-func (s GroupService) UpdateGroup(groupID primitive.ObjectID, updatedGroup *model.Group) (*dto.Group, error) {
+func (s GroupService) UpdateGroup(groupID primitive.ObjectID, updatedGroup *dto.GroupUpdateRequest) (*dto.Group, error) {
 	updatedGroupDTO, err := s.groupRepository.UpdateGroup(groupID, updatedGroup)
 	if err != nil {
 		return nil, err
