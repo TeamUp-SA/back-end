@@ -27,7 +27,6 @@ type GroupCreateRequest struct {
 	Tags        []grouptag.GroupTag  `json:"tags"`
 	Closed      bool                 `json:"closed"`
 	Date        string            `json:"date"`
-	CreatedAt   time.Time            `json:"createdAt"`
 }
 
 type GroupUpdateRequest struct {
@@ -37,5 +36,4 @@ type GroupUpdateRequest struct {
 	Tags        *[]grouptag.GroupTag `json:"tags"`
 	Closed      *bool                `json:"closed"`
 	Date        *string            `json:"date"`
-	CreatedAt   *time.Time           `json:"createdAt"`
 }

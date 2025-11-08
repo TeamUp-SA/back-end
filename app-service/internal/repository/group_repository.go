@@ -139,9 +139,6 @@ func (r GroupRepository) UpdateGroup(groupID primitive.ObjectID, req *dto.GroupU
 	if req.Date != nil {
 		updateFields["date"] = *req.Date
 	}
-	if req.CreatedAt != nil {
-		updateFields["createdAt"] = *req.CreatedAt
-	}
 
 	if len(updateFields) == 0 {
 		return nil, fmt.Errorf("no fields to update")
