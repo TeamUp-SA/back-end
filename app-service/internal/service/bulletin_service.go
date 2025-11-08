@@ -1,9 +1,13 @@
 package service
 
 import (
-	"github.com/Ntchah/TeamUp-application-service/internal/dto"
-	"github.com/Ntchah/TeamUp-application-service/internal/model"
-	"github.com/Ntchah/TeamUp-application-service/internal/repository"
+	"mime/multipart"
+
+	"app-service/internal/dto"
+	"app-service/internal/model"
+	"app-service/internal/repository"
+	"app-service/internal/utils"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -12,8 +16,8 @@ type IBulletinService interface {
 	GetBulletinByID(bulletinID primitive.ObjectID) (*dto.Bulletin, error)
 	GetBulletinsByAuthorID(authorID primitive.ObjectID) ([]dto.Bulletin, error)
 	GetBulletinsByGroupID(groupID primitive.ObjectID) ([]dto.Bulletin, error)
-	CreateBulletin(bulletin *model.Bulletin) (*dto.Bulletin, error)
-	UpdateBulletin(bulletinID primitive.ObjectID, updatedBulletin *dto.BulletinUpdateRequest) (*dto.Bulletin, error)
+	CreateBulletin(bulletin *model.Bulletin, imageFile multipart.File, fileHeader *multipart.FileHeader) (*dto.Bulletin, error)
+	UpdateBulletin(bulletinID primitive.ObjectID, updatedBulletin *dto.BulletinUpdateRequest, imageFile multipart.File, fileHeader *multipart.FileHeader) (*dto.Bulletin, error)
 	DeleteBulletin(bulletinID primitive.ObjectID) error
 }
 
@@ -59,10 +63,16 @@ func (s BulletinService) GetBulletinsByGroupID(groupID primitive.ObjectID) ([]dt
 	return bulletins, nil
 }
 
-func (s BulletinService) CreateBulletin(bulletin *model.Bulletin) (*dto.Bulletin, error) {
+func (s BulletinService) CreateBulletin(bulletin *model.Bulletin, imageFile multipart.File, fileHeader *multipart.FileHeader) (*dto.Bulletin, error) {
+	if imageFile != nil && fileHeader != nil {
+		s3URL, err := utils.UploadFileToS3(imageFile, fileHeader)
+		if err != nil {
+			return nil, err
+		}
+		bulletin.Image = s3URL
+	}
 
 	newBulletin, err := s.bulletinRepository.CreateBulletin(bulletin)
-
 	if err != nil {
 		return nil, err
 	}
@@ -70,14 +80,21 @@ func (s BulletinService) CreateBulletin(bulletin *model.Bulletin) (*dto.Bulletin
 	return newBulletin, nil
 }
 
-func (s BulletinService) UpdateBulletin(bulletinID primitive.ObjectID, updatedBulletin *dto.BulletinUpdateRequest) (*dto.Bulletin, error) {
+func (s BulletinService) UpdateBulletin(bulletinID primitive.ObjectID, updatedBulletin *dto.BulletinUpdateRequest, imageFile multipart.File, fileHeader *multipart.FileHeader) (*dto.Bulletin, error) {
+	if imageFile != nil && fileHeader != nil {
+		s3URL, err := utils.UploadFileToS3(imageFile, fileHeader)
+		if err != nil {
+			return nil, err
+		}
+		updatedBulletin.Image = &s3URL
+	}
 
-	updatedBulletinDTO, err := s.bulletinRepository.UpdateBulletin(bulletinID, updatedBulletin)
+	updatedDTO, err := s.bulletinRepository.UpdateBulletin(bulletinID, updatedBulletin)
 	if err != nil {
 		return nil, err
 	}
 
-	return updatedBulletinDTO, nil
+	return updatedDTO, nil
 }
 
 func (s BulletinService) DeleteBulletin(bulletinID primitive.ObjectID) error {

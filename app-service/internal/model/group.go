@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/Ntchah/TeamUp-application-service/internal/enum/grouptag"
+	"app-service/internal/enum/grouptag"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -15,6 +15,6 @@ type Group struct {
 	Members     []primitive.ObjectID `json:"members" bson:"members"`
 	Tags        []grouptag.GroupTag  `json:"tags" bson:"tags"`
 	Closed      bool                 `json:"closed" bson:"closed"`
-	Date        string            `json:"date" bson:"date"`
+	Date        string               `json:"date" bson:"date"`
 	CreatedAt   time.Time            `json:"createdAt" bson:"createdAt"`
 }

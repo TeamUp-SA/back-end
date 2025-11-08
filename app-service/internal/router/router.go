@@ -5,8 +5,9 @@ import (
 
 	"time"
 
-	docs "github.com/Ntchah/TeamUp-application-service/docs"
-	"github.com/Ntchah/TeamUp-application-service/internal/config"
+	docs "app-service/docs"
+	"app-service/internal/config"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
@@ -28,7 +29,7 @@ func (r *Router) Run(mongoDB *mongo.Database) {
 
 	// CORS setting
 	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string{"http://localhost:3001","http://localhost:3000"}
+	corsConfig.AllowOrigins = []string{"http://localhost:3001", "http://localhost:3000"}
 	corsConfig.AllowMethods = []string{"OPTIONS", "PATCH", "PUT", "GET", "POST", "DELETE"}
 	corsConfig.AllowHeaders = []string{"Content-Type", "Authorization"} // Allow Authorization header
 	corsConfig.ExposeHeaders = []string{"Content-Length"}
@@ -50,7 +51,7 @@ func (r *Router) Run(mongoDB *mongo.Database) {
 	r.g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	// versioning
-	v1 := r.g.Group("/api/v1")
+	v1 := r.g.Group("")
 
 	// setup
 	r.deps = NewDependencies(mongoDB, r.conf)

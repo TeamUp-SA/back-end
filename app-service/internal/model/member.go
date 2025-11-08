@@ -14,8 +14,8 @@ type Member struct {
 	PhoneNumber string             `json:"phoneNumber,omitempty" bson:"phoneNumber,omitempty"`
 
 	// Portfolio Section
-	Bio          string   `json:"bio,omitempty" bson:"bio,omitempty"`               // Short self intro
-	Skills       []string `json:"skills,omitempty" bson:"skills,omitempty"`         // e.g. ["React", "Go", "UI/UX"]
+	Bio          string   `json:"bio,omitempty" bson:"bio,omitempty"`       // Short self intro
+	Skills       []string `json:"skills,omitempty" bson:"skills,omitempty"` // e.g. ["React", "Go", "UI/UX"]
 	LinkedIn     string   `json:"linkedIn,omitempty" bson:"linkedIn,omitempty"`
 	GitHub       string   `json:"github,omitempty" bson:"github,omitempty"`
 	Website      string   `json:"website,omitempty" bson:"website,omitempty"`
@@ -28,18 +28,18 @@ type Member struct {
 
 // Work / project experience
 type Experience struct {
-	Title       string `json:"title" bson:"title"`             // e.g. "Frontend Developer Intern"
-	Company     string `json:"company" bson:"company"`         // or "ABC Inc."
+	Title       string `json:"title" bson:"title"`     // e.g. "Frontend Developer Intern"
+	Company     string `json:"company" bson:"company"` // or "ABC Inc."
 	Description string `json:"description,omitempty" bson:"description,omitempty"`
-	StartYear   int `json:"startYear,omitempty" bson:"startYear,omitempty"`
-	EndYear     int `json:"endYear,omitempty" bson:"endYear,omitempty"`
+	StartYear   int    `json:"startYear,omitempty" bson:"startYear,omitempty"`
+	EndYear     int    `json:"endYear,omitempty" bson:"endYear,omitempty"`
 }
 
 // Education info
 type Education struct {
-	School      string `json:"school" bson:"school"`
-	Degree      string `json:"degree,omitempty" bson:"degree,omitempty"`
-	Field       string `json:"field,omitempty" bson:"field,omitempty"`
-	StartYear   int    `json:"startYear,omitempty" bson:"startYear,omitempty"`
-	EndYear     int    `json:"endYear,omitempty" bson:"endYear,omitempty"`
+	School    string `json:"school" bson:"school"`
+	Degree    string `json:"degree,omitempty" bson:"degree,omitempty"`
+	Field     string `json:"field,omitempty" bson:"field,omitempty"`
+	StartYear int    `json:"startYear,omitempty" bson:"startYear,omitempty"`
+	EndYear   int    `json:"endYear,omitempty" bson:"endYear,omitempty"`
 }

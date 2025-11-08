@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Ntchah/TeamUp-application-service/internal/config"
+	"app-service/internal/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

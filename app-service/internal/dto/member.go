@@ -54,7 +54,6 @@ type MemberUpdateRequest struct {
 	// Experience Section
 	Experience []Experience `json:"experience,omitempty"`
 	Education  []Education  `json:"education,omitempty"`
-
 }
 
 // Work / project experience
