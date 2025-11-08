@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/Ntchah/TeamUp-application-service/internal/dto"
@@ -17,7 +18,7 @@ type IGroupRepository interface {
 	GetGroupsByOwnerID(ownerID primitive.ObjectID) ([]dto.Group, error)
 	GetGroups() ([]dto.Group, error)
 	CreateGroup(group *model.Group) (*dto.Group, error)
-	UpdateGroup(groupID primitive.ObjectID, updatedGroup *model.Group) (*dto.Group, error)
+	UpdateGroup(groupID primitive.ObjectID, updatedGroup *dto.GroupUpdateRequest) (*dto.Group, error)
 	DeleteGroup(groupID primitive.ObjectID) error
 }
 
@@ -115,36 +116,49 @@ func (r *GroupRepository) CreateGroup(group *model.Group) (*dto.Group, error) {
 	return converter.GroupModelToDTO(newGroup)
 }
 
-func (r *GroupRepository) UpdateGroup(groupID primitive.ObjectID, updatedGroup *model.Group) (*dto.Group, error) {
+func (r GroupRepository) UpdateGroup(groupID primitive.ObjectID, req *dto.GroupUpdateRequest) (*dto.Group, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	updateData, err := bson.Marshal(updatedGroup)
-	if err != nil {
-		return nil, err
+	updateFields := bson.M{}
+	if req.Title != nil {
+		updateFields["title"] = *req.Title
+	}
+	if req.Description != nil {
+		updateFields["description"] = *req.Description
+	}
+	if req.Members != nil {
+		updateFields["members"] = *req.Members
+	}
+	if req.Tags != nil {
+		updateFields["tags"] = *req.Tags
+	}
+	if req.Closed != nil {
+		updateFields["closed"] = *req.Closed
+	}
+	if req.Date != nil {
+		updateFields["date"] = *req.Date
 	}
 
-	var update bson.M
-	if err := bson.Unmarshal(updateData, &update); err != nil {
-		return nil, err
+	if len(updateFields) == 0 {
+		return nil, fmt.Errorf("no fields to update")
 	}
-
-	update = bson.M{"$set": update}
 
 	filter := bson.M{"_id": groupID}
-	_, err = r.groupCollection.UpdateOne(ctx, filter, update)
+	update := bson.M{"$set": updateFields}
+
+	_, err := r.groupCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return nil, err
 	}
 
-	var newUpdatedGroup *model.Group
-	err = r.groupCollection.FindOne(ctx, filter).Decode(&newUpdatedGroup)
-
-	if err != nil {
+	// Fetch updated document
+	var updated model.Group
+	if err := r.groupCollection.FindOne(ctx, filter).Decode(&updated); err != nil {
 		return nil, err
 	}
 
-	return converter.GroupModelToDTO(newUpdatedGroup)
+	return converter.GroupModelToDTO(&updated)
 }
 
 func (r *GroupRepository) DeleteGroup(groupID primitive.ObjectID) error {

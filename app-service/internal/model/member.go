@@ -24,9 +24,6 @@ type Member struct {
 	// Experience Section
 	Experience []Experience `json:"experience,omitempty" bson:"experience,omitempty"`
 	Education  []Education  `json:"education,omitempty" bson:"education,omitempty"`
-
-	// Group participation
-	GroupMemberships []primitive.ObjectID `json:"groupMemberships,omitempty" bson:"groupMemberships,omitempty"`
 }
 
 // Work / project experience
@@ -34,8 +31,8 @@ type Experience struct {
 	Title       string `json:"title" bson:"title"`             // e.g. "Frontend Developer Intern"
 	Company     string `json:"company" bson:"company"`         // or "ABC Inc."
 	Description string `json:"description,omitempty" bson:"description,omitempty"`
-	StartYear   int `json:"startDate,omitempty" bson:"startDate,omitempty"`
-	EndYear     int `json:"endDate,omitempty" bson:"endDate,omitempty"`
+	StartYear   int `json:"startYear,omitempty" bson:"startYear,omitempty"`
+	EndYear     int `json:"endYear,omitempty" bson:"endYear,omitempty"`
 }
 
 // Education info

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"time"
+	"fmt"
 
 	"github.com/Ntchah/TeamUp-application-service/internal/dto"
 	"github.com/Ntchah/TeamUp-application-service/internal/model"
@@ -18,7 +19,7 @@ type IBulletinRepository interface {
 	GetBulletinsByAuthorID(authorID primitive.ObjectID) ([]dto.Bulletin, error)
 	GetBulletinsByGroupID(groupID primitive.ObjectID) ([]dto.Bulletin, error)
 	CreateBulletin(bulletin *model.Bulletin) (*dto.Bulletin, error)
-	UpdateBulletin(bulletinID primitive.ObjectID, updatedBulletin *model.Bulletin) (*dto.Bulletin, error)
+	UpdateBulletin(bulletinID primitive.ObjectID, updatedBulletin *dto.BulletinUpdateRequest) (*dto.Bulletin, error)
 	DeleteBulletin(bulletinID primitive.ObjectID) error
 }
 
@@ -140,33 +141,50 @@ func (r BulletinRepository) CreateBulletin(bulletin *model.Bulletin) (*dto.Bulle
 	return converter.BulletinModelToDTO(newBulletin)
 }
 
-func (r BulletinRepository) UpdateBulletin(bulletinID primitive.ObjectID, updatedBulletin *model.Bulletin) (*dto.Bulletin, error) {
+func (r BulletinRepository) UpdateBulletin(bulletinID primitive.ObjectID, req *dto.BulletinUpdateRequest) (*dto.Bulletin, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	update := bson.M{
-		"$set": bson.M{
-			"title": updatedBulletin.Title,
-			"content":  updatedBulletin.Content,
-			"groupID":  updatedBulletin.GroupID,
-			"createdAt": time.Now(),
-		},
+	updateFields := bson.M{}
+	if req.Title != nil {
+		updateFields["title"] = *req.Title
+	}
+	if req.Description != nil {
+		updateFields["description"] = *req.Description
+	}
+	if req.GroupID != nil {
+		updateFields["group_id"] = *req.GroupID
+	}
+	if req.Date != nil {
+		updateFields["date"] = *req.Date
+	}
+	if req.Image != nil {
+		updateFields["image"] = *req.Image
+	}
+	if req.Tags != nil {
+		updateFields["tags"] = *req.Tags
 	}
 
+	if len(updateFields) == 0 {
+		return nil, fmt.Errorf("no fields to update")
+	}
+
+	update := bson.M{"$set": updateFields}
 	filter := bson.M{"_id": bulletinID}
+
 	_, err := r.bulletinCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return nil, err
 	}
 
-	var newUpdatedBulletin *model.Bulletin
-	err = r.bulletinCollection.FindOne(ctx, filter).Decode(&newUpdatedBulletin)
-	if err != nil {
+	var updated model.Bulletin
+	if err := r.bulletinCollection.FindOne(ctx, filter).Decode(&updated); err != nil {
 		return nil, err
 	}
 
-	return converter.BulletinModelToDTO(newUpdatedBulletin)
+	return converter.BulletinModelToDTO(&updated)
 }
+
 
 func (r BulletinRepository) DeleteBulletin(bulletinID primitive.ObjectID) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)

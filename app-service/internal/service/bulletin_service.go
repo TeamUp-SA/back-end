@@ -13,7 +13,7 @@ type IBulletinService interface {
 	GetBulletinsByAuthorID(authorID primitive.ObjectID) ([]dto.Bulletin, error)
 	GetBulletinsByGroupID(groupID primitive.ObjectID) ([]dto.Bulletin, error)
 	CreateBulletin(bulletin *model.Bulletin) (*dto.Bulletin, error)
-	UpdateBulletin(bulletinID primitive.ObjectID, updatedBulletin *model.Bulletin) (*dto.Bulletin, error)
+	UpdateBulletin(bulletinID primitive.ObjectID, updatedBulletin *dto.BulletinUpdateRequest) (*dto.Bulletin, error)
 	DeleteBulletin(bulletinID primitive.ObjectID) error
 }
 
@@ -70,8 +70,7 @@ func (s BulletinService) CreateBulletin(bulletin *model.Bulletin) (*dto.Bulletin
 	return newBulletin, nil
 }
 
-
-func (s BulletinService) UpdateBulletin(bulletinID primitive.ObjectID, updatedBulletin *model.Bulletin) (*dto.Bulletin, error) {
+func (s BulletinService) UpdateBulletin(bulletinID primitive.ObjectID, updatedBulletin *dto.BulletinUpdateRequest) (*dto.Bulletin, error) {
 
 	updatedBulletinDTO, err := s.bulletinRepository.UpdateBulletin(bulletinID, updatedBulletin)
 	if err != nil {
@@ -85,9 +84,8 @@ func (s BulletinService) DeleteBulletin(bulletinID primitive.ObjectID) error {
 
 	err := s.bulletinRepository.DeleteBulletin(bulletinID)
 	if err != nil {
-		return err 
+		return err
 	}
 
-	return nil 
+	return nil
 }
-

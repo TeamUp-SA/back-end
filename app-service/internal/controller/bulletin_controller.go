@@ -258,8 +258,8 @@ func (s BulletinController) UpdateBulletin(c *gin.Context) {
 		})
 		return
 	}
-	var updatedBulletin model.Bulletin
-	if err := c.BindJSON(&updatedBulletin); err != nil {
+	var updateReq dto.BulletinUpdateRequest
+	if err := c.BindJSON(&updateReq); err != nil {
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{
 			Success: false,
 			Status:  http.StatusBadRequest,
@@ -269,7 +269,8 @@ func (s BulletinController) UpdateBulletin(c *gin.Context) {
 		return
 	}
 
-	res, err := s.bulletinService.UpdateBulletin(bulletinID, &updatedBulletin)
+	res, err := s.bulletinService.UpdateBulletin(bulletinID, &updateReq)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
