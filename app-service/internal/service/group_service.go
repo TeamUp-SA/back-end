@@ -22,29 +22,32 @@ type IGroupService interface {
 	GetGroups() ([]dto.Group, error)
 	CreateGroup(group *model.Group) (*dto.Group, error)
 	UpdateGroup(groupID primitive.ObjectID, updatedGroup *dto.GroupUpdateRequest) (*dto.Group, error)
-	DeleteGroup(groupID primitive.ObjectID) error
+	DeleteGroup(groupID primitive.ObjectID, requesterID primitive.ObjectID) error
 	NotifyGroupMembers(ctx context.Context, groupID primitive.ObjectID, subject, message string) error
 }
 
 type GroupService struct {
-	groupRepository  repository.IGroupRepository
-	memberRepository repository.IMemberRepository
-	producer         kafka.Producer
+	groupRepository     repository.IGroupRepository
+	memberRepository    repository.IMemberRepository
+	bulletinRepository  repository.IBulletinRepository
+	producer            kafka.Producer
 }
 
 var (
-	ErrGroupNotFound        = errors.New("group not found")
-	ErrMessageBodyEmpty     = errors.New("message is required")
+	ErrGroupNotFound         = errors.New("group not found")
+	ErrGroupForbidden        = errors.New("user is not the group owner")
+	ErrMessageBodyEmpty      = errors.New("message is required")
 	ErrProducerNotConfigured = errors.New("notification producer is not configured")
 )
 
 const hardcodedNotificationEmail = "dalai2547@gmail.com"
 
-func NewGroupService(groupRepo repository.IGroupRepository, memberRepo repository.IMemberRepository, producer kafka.Producer) IGroupService {
+func NewGroupService(groupRepo repository.IGroupRepository, memberRepo repository.IMemberRepository, bulletinRepo repository.IBulletinRepository, producer kafka.Producer) IGroupService {
 	return GroupService{
-		groupRepository:  groupRepo,
-		memberRepository: memberRepo,
-		producer:         producer,
+		groupRepository:    groupRepo,
+		memberRepository:   memberRepo,
+		bulletinRepository: bulletinRepo,
+		producer:           producer,
 	}
 }
 
@@ -99,11 +102,33 @@ func (s GroupService) UpdateGroup(groupID primitive.ObjectID, updatedGroup *dto.
 	return updatedGroupDTO, nil
 }
 
-func (s GroupService) DeleteGroup(groupID primitive.ObjectID) error {
-	err := s.groupRepository.DeleteGroup(groupID)
+func (s GroupService) DeleteGroup(groupID primitive.ObjectID, requesterID primitive.ObjectID) error {
+	if requesterID == primitive.NilObjectID {
+		return ErrGroupForbidden
+	}
+
+	group, err := s.groupRepository.GetGroupByID(groupID)
 	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return ErrGroupNotFound
+		}
 		return err
 	}
+
+	if group.OwnerID != requesterID {
+		return ErrGroupForbidden
+	}
+
+	if err := s.groupRepository.DeleteGroup(groupID); err != nil {
+		return err
+	}
+
+	if s.bulletinRepository != nil {
+		if _, bulletinErr := s.bulletinRepository.DeleteBulletinsByGroupID(groupID); bulletinErr != nil {
+			return bulletinErr
+		}
+	}
+
 	return nil
 }
 

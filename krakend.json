@@ -50,6 +50,18 @@
       ]
     },
     {
+      "endpoint": "/auth/{rest}",
+      "method": "OPTIONS",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/{rest}",
+          "host": ["http://auth-service:8082"],
+          "method": "OPTIONS"
+        }
+      ]
+    },
+    {
       "endpoint": "/application/{rest}",
       "method": "GET",
       "output_encoding": "no-op",
@@ -420,7 +432,15 @@
     "github_com/devopsfaith/krakend-cors": {
       "allow_origins": ["http://localhost:3000", "http://localhost:3001"],
       "allow_methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-      "allow_headers": ["Origin", "Authorization", "Content-Type", "Accept"],
+      "allow_headers": [
+        "Authorization",
+        "Content-Type",
+        "Accept",
+        "Origin",
+        "X-Member-ID",
+        "x-member-id",
+        "X-Requested-With"
+      ],
       "expose_headers": ["Content-Length", "Content-Type"],
       "max_age": "12h",
       "allow_credentials": true

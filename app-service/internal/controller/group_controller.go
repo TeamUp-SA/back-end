@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
+	"strings"
 
 	"app-service/internal/dto"
 	"app-service/internal/model"
@@ -267,9 +269,51 @@ func (s GroupController) DeleteGroup(c *gin.Context) {
 		})
 		return
 	}
-	err = s.groupService.DeleteGroup(groupID)
+
+	memberIDHeader := strings.TrimSpace(c.GetHeader("X-Member-ID"))
+	if memberIDHeader == "" {
+		c.JSON(http.StatusUnauthorized, dto.ErrorResponse{
+			Success: false,
+			Status:  http.StatusUnauthorized,
+			Error:   "Unauthorized",
+			Message: "missing member identification header",
+		})
+		return
+	}
+
+	requesterID, err := primitive.ObjectIDFromHex(memberIDHeader)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+			Success: false,
+			Status:  http.StatusBadRequest,
+			Error:   "Invalid requester ID",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	err = s.groupService.DeleteGroup(groupID, requesterID)
 
 	if err != nil {
+		switch {
+		case errors.Is(err, service.ErrGroupNotFound):
+			c.JSON(http.StatusNotFound, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusNotFound,
+				Error:   "Group not found",
+				Message: err.Error(),
+			})
+			return
+		case errors.Is(err, service.ErrGroupForbidden):
+			c.JSON(http.StatusForbidden, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusForbidden,
+				Error:   "Forbidden",
+				Message: "You do not have permission to delete this group",
+			})
+			return
+		}
+
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Status:  http.StatusInternalServerError,
