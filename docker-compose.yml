@@ -63,9 +63,11 @@ services:
     image: auth-service:latest
     container_name: auth-service
     depends_on:
+      - db
       - user-service
       - redis
     environment:
+      REDIS_ADDR: ${REDIS_ADDR}
       DATABASE_DSN: ${DATABASE_DSN}
       JWT_SECRET: ${JWT_SECRET}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
