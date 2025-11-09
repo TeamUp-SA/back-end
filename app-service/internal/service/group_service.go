@@ -27,15 +27,14 @@ type IGroupService interface {
 }
 
 type GroupService struct {
-	groupRepository     repository.IGroupRepository
-	memberRepository    repository.IMemberRepository
-	bulletinRepository  repository.IBulletinRepository
-	producer            kafka.Producer
+	groupRepository    repository.IGroupRepository
+	memberRepository   repository.IMemberRepository
+	bulletinRepository repository.IBulletinRepository
+	producer           kafka.Producer
 }
 
 var (
 	ErrGroupNotFound         = errors.New("group not found")
-	ErrGroupForbidden        = errors.New("user is not the group owner")
 	ErrMessageBodyEmpty      = errors.New("message is required")
 	ErrProducerNotConfigured = errors.New("notification producer is not configured")
 )
@@ -103,20 +102,12 @@ func (s GroupService) UpdateGroup(groupID primitive.ObjectID, updatedGroup *dto.
 }
 
 func (s GroupService) DeleteGroup(groupID primitive.ObjectID, requesterID primitive.ObjectID) error {
-	if requesterID == primitive.NilObjectID {
-		return ErrGroupForbidden
-	}
-
-	group, err := s.groupRepository.GetGroupByID(groupID)
+	_, err := s.groupRepository.GetGroupByID(groupID)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return ErrGroupNotFound
 		}
 		return err
-	}
-
-	if group.OwnerID != requesterID {
-		return ErrGroupForbidden
 	}
 
 	if err := s.groupRepository.DeleteGroup(groupID); err != nil {

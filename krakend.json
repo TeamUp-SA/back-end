@@ -91,7 +91,8 @@
       "backend": [
         {
           "url_pattern": "/group/{rest}",
-          "host": ["http://app-service:3001"]
+          "host": ["http://app-service:3001"],
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -103,7 +104,8 @@
         {
           "url_pattern": "/group/{rest}",
           "host": ["http://app-service:3001"],
-          "method": "POST"
+          "method": "POST",
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -115,7 +117,8 @@
         {
           "url_pattern": "/group/{rest}",
           "host": ["http://app-service:3001"],
-          "method": "PUT"
+          "method": "PUT",
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -127,7 +130,8 @@
         {
           "url_pattern": "/group/{rest}",
           "host": ["http://app-service:3001"],
-          "method": "DELETE"
+          "method": "DELETE",
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -137,7 +141,8 @@
       "backend": [
         {
           "url_pattern": "/group",
-          "host": ["http://app-service:3001"]
+          "host": ["http://app-service:3001"],
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -149,7 +154,8 @@
         {
           "url_pattern": "/group",
           "host": ["http://app-service:3001"],
-          "method": "POST"
+          "method": "POST",
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -159,7 +165,8 @@
       "backend": [
         {
           "url_pattern": "/group/",
-          "host": ["http://app-service:3001"]
+          "host": ["http://app-service:3001"],
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -171,7 +178,8 @@
         {
           "url_pattern": "/group/",
           "host": ["http://app-service:3001"],
-          "method": "POST"
+          "method": "POST",
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -183,7 +191,8 @@
         {
           "url_pattern": "/group/",
           "host": ["http://app-service:3001"],
-          "method": "PUT"
+          "method": "PUT",
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -195,7 +204,8 @@
         {
           "url_pattern": "/group/",
           "host": ["http://app-service:3001"],
-          "method": "DELETE"
+          "method": "DELETE",
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -205,7 +215,8 @@
       "backend": [
         {
           "url_pattern": "/bulletin/{rest}",
-          "host": ["http://app-service:3001"]
+          "host": ["http://app-service:3001"],
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -217,7 +228,8 @@
         {
           "url_pattern": "/bulletin/{rest}",
           "host": ["http://app-service:3001"],
-          "method": "POST"
+          "method": "POST",
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -229,7 +241,8 @@
         {
           "url_pattern": "/bulletin/{rest}",
           "host": ["http://app-service:3001"],
-          "method": "PUT"
+          "method": "PUT",
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -241,7 +254,8 @@
         {
           "url_pattern": "/bulletin/{rest}",
           "host": ["http://app-service:3001"],
-          "method": "DELETE"
+          "method": "DELETE",
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -251,7 +265,8 @@
       "backend": [
         {
           "url_pattern": "/bulletin",
-          "host": ["http://app-service:3001"]
+          "host": ["http://app-service:3001"],
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -263,7 +278,8 @@
         {
           "url_pattern": "/bulletin",
           "host": ["http://app-service:3001"],
-          "method": "POST"
+          "method": "POST",
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -273,7 +289,8 @@
       "backend": [
         {
           "url_pattern": "/bulletin/",
-          "host": ["http://app-service:3001"]
+          "host": ["http://app-service:3001"],
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -285,7 +302,8 @@
         {
           "url_pattern": "/bulletin/",
           "host": ["http://app-service:3001"],
-          "method": "POST"
+          "method": "POST",
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -297,7 +315,8 @@
         {
           "url_pattern": "/bulletin/",
           "host": ["http://app-service:3001"],
-          "method": "PUT"
+          "method": "PUT",
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
@@ -309,7 +328,8 @@
         {
           "url_pattern": "/bulletin/",
           "host": ["http://app-service:3001"],
-          "method": "DELETE"
+          "method": "DELETE",
+          "input_headers": ["X-Member-ID", "x-member-id"]
         }
       ]
     },
