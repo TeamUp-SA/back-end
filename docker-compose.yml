@@ -165,6 +165,27 @@ services:
       - kafka
       - notification-service
 
+  # ------------------- Search Service -------------------
+  search-service:
+    build: ./search-service
+    image: search-service:latest
+    container_name: search-service
+    restart: always
+    environment:
+      SEARCH_SERVICE_PORT: ${SEARCH_SERVICE_PORT:-4000}
+      APP_ENV: ${APP_ENV}
+      GROUP_SERVICE_URL: ${GROUP_SERVICE_URL:-http://app-service:3001}
+      GROUP_SERVICE_TIMEOUT_SECONDS: ${GROUP_SERVICE_TIMEOUT_SECONDS:-5}
+      ENABLE_GRAPHQL_PLAYGROUND: ${ENABLE_GRAPHQL_PLAYGROUND:-true}
+      DEFAULT_SEARCH_LIMIT: ${DEFAULT_SEARCH_LIMIT:-20}
+      MAX_SEARCH_LIMIT: ${MAX_SEARCH_LIMIT:-100}
+    ports:
+      - "${SEARCH_SERVICE_PORT:-4000}:${SEARCH_SERVICE_PORT:-4000}"
+    networks:
+      - teamup
+    depends_on:
+      - app-service
+
 volumes:
   pgdata:
   redis-data:
