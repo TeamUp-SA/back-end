@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -32,11 +33,13 @@ func main() {
 		log.Fatal("❌ JWT_SECRET is required")
 	}
 
+	addr := os.Getenv("REDIS_ADDR")
+
 	// ✅ Initialize Redis client
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "redis:6379", 
-		Password: "",          
-		DB:       0,          
+		Addr:     addr,
+		Password: "",
+		DB:       0,
 	})
 
 	// Ping Redis
