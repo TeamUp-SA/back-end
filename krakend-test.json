@@ -11,7 +11,7 @@
       "backend": [
         {
           "url_pattern": "/api/{rest}",
-          "host": ["http://user-service-svc:8081"]
+          "host": ["http://user-service:8081"]
         }
       ]
     },
@@ -22,7 +22,7 @@
       "backend": [
         {
           "url_pattern": "/api/{rest}",
-          "host": ["http://user-service-svc:8081"],
+          "host": ["http://user-service:8081"],
           "method": "POST"
         }
       ]
@@ -33,7 +33,7 @@
       "backend": [
         {
           "url_pattern": "/{rest}",
-          "host": ["http://auth-service-svc:8082"]
+          "host": ["http://auth-service:8082"]
         }
       ]
     },
@@ -44,7 +44,7 @@
       "backend": [
         {
           "url_pattern": "/{rest}",
-          "host": ["http://auth-service-svc:8082"],
+          "host": ["http://auth-service:8082"],
           "method": "POST"
         }
       ]
@@ -56,7 +56,7 @@
       "backend": [
         {
           "url_pattern": "/{rest}",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "GET"
         }
       ]
@@ -68,7 +68,7 @@
       "backend": [
         {
           "url_pattern": "/{rest}",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "POST"
         }
       ]
@@ -79,7 +79,7 @@
       "backend": [
         {
           "url_pattern": "/group/{rest}",
-          "host": ["http://app-service-svc:3001"]
+          "host": ["http://app-service:3001"]
         }
       ]
     },
@@ -90,7 +90,7 @@
       "backend": [
         {
           "url_pattern": "/group/{rest}",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "POST"
         }
       ]
@@ -102,7 +102,7 @@
       "backend": [
         {
           "url_pattern": "/group/{rest}",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "PUT"
         }
       ]
@@ -114,7 +114,7 @@
       "backend": [
         {
           "url_pattern": "/group/{rest}",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "DELETE"
         }
       ]
@@ -125,7 +125,7 @@
       "backend": [
         {
           "url_pattern": "/group",
-          "host": ["http://app-service-svc:3001"]
+          "host": ["http://app-service:3001"]
         }
       ]
     },
@@ -136,7 +136,7 @@
       "backend": [
         {
           "url_pattern": "/group",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "POST"
         }
       ]
@@ -147,7 +147,7 @@
       "backend": [
         {
           "url_pattern": "/group/",
-          "host": ["http://app-service-svc:3001"]
+          "host": ["http://app-service:3001"]
         }
       ]
     },
@@ -158,7 +158,7 @@
       "backend": [
         {
           "url_pattern": "/group/",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "POST"
         }
       ]
@@ -170,7 +170,7 @@
       "backend": [
         {
           "url_pattern": "/group/",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "PUT"
         }
       ]
@@ -182,7 +182,7 @@
       "backend": [
         {
           "url_pattern": "/group/",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "DELETE"
         }
       ]
@@ -193,7 +193,7 @@
       "backend": [
         {
           "url_pattern": "/bulletin/{rest}",
-          "host": ["http://app-service-svc:3001"]
+          "host": ["http://app-service:3001"]
         }
       ]
     },
@@ -204,7 +204,7 @@
       "backend": [
         {
           "url_pattern": "/bulletin/{rest}",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "POST"
         }
       ]
@@ -216,7 +216,7 @@
       "backend": [
         {
           "url_pattern": "/bulletin/{rest}",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "PUT"
         }
       ]
@@ -228,7 +228,7 @@
       "backend": [
         {
           "url_pattern": "/bulletin/{rest}",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "DELETE"
         }
       ]
@@ -239,7 +239,7 @@
       "backend": [
         {
           "url_pattern": "/bulletin",
-          "host": ["http://app-service-svc:3001"]
+          "host": ["http://app-service:3001"]
         }
       ]
     },
@@ -250,7 +250,7 @@
       "backend": [
         {
           "url_pattern": "/bulletin",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "POST"
         }
       ]
@@ -261,7 +261,7 @@
       "backend": [
         {
           "url_pattern": "/bulletin/",
-          "host": ["http://app-service-svc:3001"]
+          "host": ["http://app-service:3001"]
         }
       ]
     },
@@ -272,7 +272,7 @@
       "backend": [
         {
           "url_pattern": "/bulletin/",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "POST"
         }
       ]
@@ -284,7 +284,7 @@
       "backend": [
         {
           "url_pattern": "/bulletin/",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "PUT"
         }
       ]
@@ -296,7 +296,7 @@
       "backend": [
         {
           "url_pattern": "/bulletin/",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "DELETE"
         }
       ]
@@ -307,7 +307,7 @@
       "backend": [
         {
           "url_pattern": "/member/{rest}",
-          "host": ["http://app-service-svc:3001"]
+          "host": ["http://app-service:3001"]
         }
       ]
     },
@@ -318,7 +318,7 @@
       "backend": [
         {
           "url_pattern": "/member/{rest}",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "POST"
         }
       ]
@@ -330,7 +330,7 @@
       "backend": [
         {
           "url_pattern": "/member/{rest}",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "PUT"
         }
       ]
@@ -342,7 +342,7 @@
       "backend": [
         {
           "url_pattern": "/member/{rest}",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "DELETE"
         }
       ]
@@ -353,7 +353,7 @@
       "backend": [
         {
           "url_pattern": "/member",
-          "host": ["http://app-service-svc:3001"]
+          "host": ["http://app-service:3001"]
         }
       ]
     },
@@ -364,7 +364,7 @@
       "backend": [
         {
           "url_pattern": "/member",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "POST"
         }
       ]
@@ -375,7 +375,7 @@
       "backend": [
         {
           "url_pattern": "/member/",
-          "host": ["http://app-service-svc:3001"]
+          "host": ["http://app-service:3001"]
         }
       ]
     },
@@ -386,7 +386,7 @@
       "backend": [
         {
           "url_pattern": "/member/",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "POST"
         }
       ]
@@ -398,7 +398,7 @@
       "backend": [
         {
           "url_pattern": "/member/",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "PUT"
         }
       ]
@@ -410,7 +410,7 @@
       "backend": [
         {
           "url_pattern": "/member/",
-          "host": ["http://app-service-svc:3001"],
+          "host": ["http://app-service:3001"],
           "method": "DELETE"
         }
       ]
