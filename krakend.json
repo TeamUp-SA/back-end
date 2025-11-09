@@ -38,6 +38,17 @@
       ]
     },
     {
+      "endpoint": "/auth/login/google",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/login/google",
+          "host": ["http://auth-service:8082"],
+          "method": "GET"
+        }
+      ]
+    },
+    {
       "endpoint": "/auth/{rest}",
       "method": "POST",
       "output_encoding": "no-op",
