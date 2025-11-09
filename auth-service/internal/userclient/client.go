@@ -16,7 +16,7 @@ type Client struct {
 }
 
 func New(cfg *config.Config) (*Client, error) {
-	conn, err := grpc.Dial(cfg.UserServiceAddr, grpc.WithInsecure())
+	conn, err := grpc.Dial(cfg.UserGrpcServiceAddr, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
