@@ -27,16 +27,15 @@ func NewRouter(g *gin.Engine, conf *config.Config) *Router {
 
 func (r *Router) Run(mongoDB *mongo.Database) {
 
-	// CORS setting
-	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string{"http://localhost:3001", "http://localhost:3000"}
-	corsConfig.AllowMethods = []string{"OPTIONS", "PATCH", "PUT", "GET", "POST", "DELETE"}
-	corsConfig.AllowHeaders = []string{"Content-Type", "Authorization"} // Allow Authorization header
-	corsConfig.ExposeHeaders = []string{"Content-Length"}
-	corsConfig.AllowCredentials = true // If you are using cookies or Authorization header
-
-	// Optional: Handle preflight cache
-	corsConfig.MaxAge = 12 * time.Hour
+	// CORS setting - allow browser apps on localhost with credentials
+	corsConfig := cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:3001"},
+		AllowMethods:     []string{"OPTIONS", "PATCH", "PUT", "GET", "POST", "DELETE"},
+		AllowHeaders:     []string{"Content-Type", "Authorization", "X-Member-ID", "x-member-id", "X-Requested-With", "Accept"},
+		ExposeHeaders:    []string{"Content-Length", "Content-Type"},
+		MaxAge:           12 * time.Hour,
+		AllowCredentials: true,
+	}
 
 	r.g.Use(cors.New(corsConfig))
 

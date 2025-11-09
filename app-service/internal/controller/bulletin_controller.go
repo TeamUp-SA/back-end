@@ -444,9 +444,51 @@ func (s BulletinController) DeleteBulletin(c *gin.Context) {
 		})
 		return
 	}
-	err = s.bulletinService.DeleteBulletin(bulletinID)
+
+	memberIDHeader := strings.TrimSpace(c.GetHeader("X-Member-ID"))
+	if memberIDHeader == "" {
+		c.JSON(http.StatusUnauthorized, dto.ErrorResponse{
+			Success: false,
+			Status:  http.StatusUnauthorized,
+			Error:   "Unauthorized",
+			Message: "missing member identification header",
+		})
+		return
+	}
+
+	requesterID, err := primitive.ObjectIDFromHex(memberIDHeader)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+			Success: false,
+			Status:  http.StatusBadRequest,
+			Error:   "Invalid requester ID",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	err = s.bulletinService.DeleteBulletin(bulletinID, requesterID)
 
 	if err != nil {
+		switch {
+		case errors.Is(err, service.ErrBulletinNotFound):
+			c.JSON(http.StatusNotFound, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusNotFound,
+				Error:   "Bulletin not found",
+				Message: err.Error(),
+			})
+			return
+		case errors.Is(err, service.ErrBulletinForbidden):
+			c.JSON(http.StatusForbidden, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusForbidden,
+				Error:   "Forbidden",
+				Message: "You do not have permission to delete this bulletin",
+			})
+			return
+		}
+
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Status:  http.StatusInternalServerError,

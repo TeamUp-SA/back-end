@@ -8,6 +8,7 @@ import (
 	"app-service/internal/dto"
 	"app-service/internal/model"
 	"app-service/pkg/utils/converter"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,6 +22,7 @@ type IBulletinRepository interface {
 	CreateBulletin(bulletin *model.Bulletin) (*dto.Bulletin, error)
 	UpdateBulletin(bulletinID primitive.ObjectID, updatedBulletin *dto.BulletinUpdateRequest) (*dto.Bulletin, error)
 	DeleteBulletin(bulletinID primitive.ObjectID) error
+	DeleteBulletinsByGroupID(groupID primitive.ObjectID) (int64, error)
 }
 
 type BulletinRepository struct {
@@ -191,4 +193,15 @@ func (r BulletinRepository) DeleteBulletin(bulletinID primitive.ObjectID) error 
 
 	_, err := r.bulletinCollection.DeleteOne(ctx, bson.M{"_id": bulletinID})
 	return err
+}
+
+func (r BulletinRepository) DeleteBulletinsByGroupID(groupID primitive.ObjectID) (int64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
+	result, err := r.bulletinCollection.DeleteMany(ctx, bson.M{"group_id": groupID})
+	if err != nil {
+		return 0, err
+	}
+	return result.DeletedCount, nil
 }
