@@ -428,7 +428,7 @@ spec:
     - name: http
       port: 8888
       targetPort: 8888
-      nodePort: 30001
+      nodePort: 30011
   selector: { app: krakend }
 ---
 apiVersion: apps/v1
@@ -455,3 +455,55 @@ spec:
       volumes:
         - name: krakend-config-volume
           configMap: { name: krakend-config-cm }
+# ===================================================================
+#  CORE: Search Service
+# ===================================================================
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: search-service-svc
+spec:
+  type: ClusterIP
+  ports:
+    - port: 4000
+      targetPort: 4000
+  selector:
+    app: search-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: search-service
+  template:
+    metadata:
+      labels:
+        app: search-service
+    spec:
+      initContainers:
+        - name: wait-for-app-service
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - 'until nc -z app-service-svc 3001; do echo "waiting for app-service"; sleep 2; done;'
+        - name: wait-for-user-service
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - 'until nc -z user-service-svc 8081; do echo "waiting for user-service"; sleep 2; done;'
+      containers:
+        - name: search-service
+          image: search-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - secretRef:
+                name: search-service-secret
