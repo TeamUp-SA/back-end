@@ -114,8 +114,12 @@ metadata:
   name: zookeeper-svc
 spec:
   type: ClusterIP
-  ports: [{ port: 2181, targetPort: 2181 }]
-  selector: { app: zookeeper }
+  ports:
+    - name: zookeeper-port
+      port: 2181
+      targetPort: 2181
+  selector:
+    app: zookeeper
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -130,20 +134,11 @@ spec:
       labels: { app: zookeeper }
     spec:
       containers:
-        - name: zookeeper
-          image: zookeeper:3.9
+        - image: wurstmeister/zookeeper
           imagePullPolicy: IfNotPresent
-          ports: [{ containerPort: 2181 }]
-          readinessProbe:
-            tcpSocket:
-              port: 2181
-            initialDelaySeconds: 15
-            periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: 2181
-            initialDelaySeconds: 30
-            periodSeconds: 10
+          name: zookeeper
+          ports:
+            - containerPort: 2181
 
 # ===================================================================
 #  MESSAGING: Kafka (Matching wurstmeister/kafka config)
@@ -152,13 +147,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  labels:
+    app: kafka
   name: kafka-svc
 spec:
-  type: ClusterIP
   ports:
     - port: 9092
-      targetPort: 9092
-      name: kafka
   selector:
     app: kafka
 ---
@@ -176,19 +170,23 @@ spec:
       labels:
         app: kafka
     spec:
+      hostname: kafka
       containers:
-        - name: kafka
+        - env:
+            - name: KAFKA_BROKER_ID
+              value: "1"
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: zookeeper-svc:2181
+            - name: KAFKA_LISTENERS
+              value: PLAINTEXT://:9092
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://kafka-svc:9092
           image: wurstmeister/kafka
+          imagePullPolicy: IfNotPresent
+          name: kafka
           ports:
             - containerPort: 9092
-              name: kafka
-            - containerPort: 9093
-              name: controller
-          env:
-            - name: KAFKA_ZOOKEEPER_CONNECT
-              value: zookeeper:2181
-            - name: KAFKA_ADVERTISED_HOST_NAME
-              value: kafka
+
 # ===================================================================
 #  CORE: User Service
 # ===================================================================
@@ -320,15 +318,39 @@ spec:
     spec:
       initContainers:
         - name: wait-for-kafka
-          image: apache/kafka:latest
+          image: wurstmeister/kafka
+          imagePullPolicy: IfNotPresent
           command:
             - sh
             - -c
             - |
-              until /bin/kafka-topics.sh --bootstrap-server kafka-svc:9092 --list | grep __consumer_offsets; do
-                echo "waiting for kafka internal topics..."
+              BROKER="kafka-svc:9092"
+              TEMP_TOPIC="notifications"
+              TEMP_GROUP="init-check-group"
+
+              # 1. Wait for the broker to be available
+              echo "Waiting for Kafka broker ($BROKER) to be ready..."
+              until /opt/kafka/bin/kafka-topics.sh --bootstrap-server $BROKER --list 2>/dev/null; do
+                echo "Broker not reachable yet. Retrying in 2 seconds..."
                 sleep 2
               done
+              echo "Broker is reachable."
+
+              # 💡 NEW STEP: Give the broker time to establish internal readiness (Zookeeper sync)
+              echo "Pausing for 5 seconds to allow broker leadership election..."
+              sleep 5
+
+              # 2. Trigger the creation of __consumer_offsets and 'notifications' topic
+              echo "Triggering creation of internal topics..."
+              /opt/kafka/bin/kafka-console-consumer.sh \
+                --bootstrap-server $BROKER \
+                --topic $TEMP_TOPIC \
+                --from-beginning \
+                --timeout-ms 5000 \
+                --max-messages 1 \
+                --consumer-property group.id=$TEMP_GROUP
+
+              echo "Kafka readiness checks complete. Starting main container."
       containers:
         - name: notification-service
           image: notification-service:latest
@@ -365,23 +387,26 @@ spec:
     spec:
       initContainers:
         - name: wait-for-kafka
-          # Using the kafka image for its cli tools is a valid way to check cluster health
           image: wurstmeister/kafka
           imagePullPolicy: IfNotPresent
           command:
-            [
-              "sh",
-              "-c",
-              "until /opt/kafka/bin/kafka-topics.sh --list --zookeeper zookeeper-svc:2181 | grep __consumer_offsets; do echo 'waiting for kafka group coordinator...'; sleep 2; done;",
-            ]
+            - sh
+            - -c
+            - |
+              BROKER="kafka-svc:9092"
+              echo "Waiting for Kafka broker ($BROKER) to be available..."
+              # FIX: Only wait for the broker to be reachable, not for a specific topic to exist.
+              until /opt/kafka/bin/kafka-topics.sh --bootstrap-server $BROKER --list 2>/dev/null; do
+                echo "Kafka broker not ready. Retrying in 2 seconds..."
+                sleep 2
+              done
+              echo "Kafka broker is ready."
         - name: wait-for-notification
           image: busybox:1.36
           command:
-            [
-              "sh",
-              "-c",
-              'until nc -z notification-service-svc 9999; do echo "waiting for notification"; sleep 2; done;',
-            ]
+            - sh
+            - -c
+            - 'until nc -z notification-service-svc 9999; do echo "waiting for notification"; sleep 2; done;'
       containers:
         - name: app-service
           image: app-service:latest

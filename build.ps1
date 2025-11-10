@@ -15,15 +15,6 @@ docker build -t notification-service:latest ./notification-service
 docker build -t app-service:latest ./app-service
 Write-Host "--- Docker images built."
 
-# === (Optional) MINIKUBE LOAD ===
-# If you are using Minikube, uncomment the lines below:
-# Write-Host "--- Loading images into Minikube..."
-# minikube image load user-service:latest
-# minikube image load auth-service:latest
-# minikube image load notification-service:latest
-# minikube image load app-service:latest
-# Write-Host "--- Images loaded."
-
 # === SECTION 3: CREATE CONFIGS & SECRETS ===
 Write-Host "--- (3/5) Creating ConfigMaps and Secrets..."
 kubectl create configmap krakend-config-cm --from-file=krakend.json=./krakend.json
