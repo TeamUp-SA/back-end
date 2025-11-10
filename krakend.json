@@ -4,6 +4,7 @@
   "port": 8888,
   "cache_ttl": "300s",
   "timeout": "3000ms",
+
   "endpoints": [
     {
       "endpoint": "/user/{rest}",
@@ -27,6 +28,7 @@
         }
       ]
     },
+
     {
       "endpoint": "/auth/{rest}",
       "output_encoding": "no-op",
@@ -34,17 +36,6 @@
         {
           "url_pattern": "/{rest}",
           "host": ["http://auth-service-svc:8082"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/auth/login/google",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/login/google",
-          "host": ["http://auth-service:8082"],
-          "method": "GET"
         }
       ]
     },
@@ -61,26 +52,25 @@
       ]
     },
     {
-      "endpoint": "/auth/{rest}",
-      "method": "OPTIONS",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/{rest}",
-          "host": ["http://auth-service:8082"],
-          "method": "OPTIONS"
-        }
-      ]
-    },
-    {
-      "endpoint": "/application/{rest}",
+      "endpoint": "/auth/login/google",
       "method": "GET",
       "output_encoding": "no-op",
       "backend": [
         {
-          "url_pattern": "/{rest}",
-          "host": ["http://app-service-svc:3001"],
+          "url_pattern": "/login/google",
+          "host": ["http://auth-service-svc:8082"],
           "method": "GET"
+        }
+      ]
+    },
+
+    {
+      "endpoint": "/application/{rest}",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/{rest}",
+          "host": ["http://app-service-svc:3001"]
         }
       ]
     },
@@ -96,16 +86,7 @@
         }
       ]
     },
-    {
-      "endpoint": "/search/graphql",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/graphql",
-          "host": ["http://search-service:4000"]
-        }
-      ]
-    },
+
     {
       "endpoint": "/search/graphql",
       "method": "POST",
@@ -113,45 +94,89 @@
       "backend": [
         {
           "url_pattern": "/graphql",
-          "host": ["http://search-service:4000"],
+          "host": ["http://search-service-svc:4000"],
+          "method": "POST"
+        }
+      ]
+    },
+
+    {
+      "endpoint": "/group",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group",
+          "host": ["http://app-service-svc:3001"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/group",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group",
+          "host": ["http://app-service-svc:3001"],
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "endpoint": "/group/",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group/",
+          "host": ["http://app-service-svc:3001"],
+          "method": "PUT"
+        }
+      ]
+    },
+    {
+      "endpoint": "/group/",
+      "method": "DELETE",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group/",
+          "host": ["http://app-service-svc:3001"],
+          "method": "DELETE"
+        }
+      ]
+    },
+    {
+      "endpoint": "/group/{rest}",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group/{rest}",
+          "host": ["http://app-service-svc:3001"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/group/{rest}",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/group/{rest}",
+          "host": ["http://app-service-svc:3001"],
           "method": "POST"
         }
       ]
     },
     {
       "endpoint": "/group/{rest}",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/group/{rest}",
-          "host": ["http://app-service-svc:3001"],
-          "input_headers": ["X-Member-ID", "x-member-id"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/group/{rest}",
-      "method": "POST",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/group/{rest}",
-          "host": ["http://app-service-svc:3001"],
-          "method": "POST",
-          "input_headers": ["X-Member-ID", "x-member-id"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/group/{rest}",
       "method": "PUT",
       "output_encoding": "no-op",
       "backend": [
         {
           "url_pattern": "/group/{rest}",
           "host": ["http://app-service-svc:3001"],
-          "method": "PUT",
-          "input_headers": ["X-Member-ID", "x-member-id"]
+          "method": "PUT"
         }
       ]
     },
@@ -163,143 +188,18 @@
         {
           "url_pattern": "/group/{rest}",
           "host": ["http://app-service-svc:3001"],
-          "method": "DELETE",
-          "input_headers": ["X-Member-ID", "x-member-id"]
+          "method": "DELETE"
         }
       ]
     },
-    {
-      "endpoint": "/group",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/group",
-          "host": ["http://app-service-svc:3001"],
-          "input_headers": ["X-Member-ID", "x-member-id"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/group",
-      "method": "POST",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/group",
-          "host": ["http://app-service-svc:3001"],
-          "method": "POST",
-          "input_headers": ["X-Member-ID", "x-member-id"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/group/",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/group/",
-          "host": ["http://app-service-svc:3001"],
-          "input_headers": ["X-Member-ID", "x-member-id"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/group/",
-      "method": "POST",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/group/",
-          "host": ["http://app-service-svc:3001"],
-          "method": "POST",
-          "input_headers": ["X-Member-ID", "x-member-id"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/group/",
-      "method": "PUT",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/group/",
-          "host": ["http://app-service-svc:3001"],
-          "method": "PUT",
-          "input_headers": ["X-Member-ID", "x-member-id"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/group/",
-      "method": "DELETE",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/group/",
-          "host": ["http://app-service-svc:3001"],
-          "method": "DELETE",
-          "input_headers": ["X-Member-ID", "x-member-id"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/bulletin/{rest}",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/bulletin/{rest}",
-          "host": ["http://app-service-svc:3001"],
-          "input_headers": ["X-Member-ID", "x-member-id"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/bulletin/{rest}",
-      "method": "POST",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/bulletin/{rest}",
-          "host": ["http://app-service-svc:3001"],
-          "method": "POST",
-          "input_headers": ["X-Member-ID", "x-member-id"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/bulletin/{rest}",
-      "method": "PUT",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/bulletin/{rest}",
-          "host": ["http://app-service-svc:3001"],
-          "method": "PUT",
-          "input_headers": ["X-Member-ID", "x-member-id"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/bulletin/{rest}",
-      "method": "DELETE",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/bulletin/{rest}",
-          "host": ["http://app-service-svc:3001"],
-          "method": "DELETE",
-          "input_headers": ["X-Member-ID", "x-member-id"]
-        }
-      ]
-    },
+
     {
       "endpoint": "/bulletin",
       "output_encoding": "no-op",
       "backend": [
         {
           "url_pattern": "/bulletin",
-          "host": ["http://app-service-svc:3001"],
-          "input_headers": ["X-Member-ID", "x-member-id"]
+          "host": ["http://app-service-svc:3001"]
         }
       ]
     },
@@ -311,32 +211,7 @@
         {
           "url_pattern": "/bulletin",
           "host": ["http://app-service-svc:3001"],
-          "method": "POST",
-          "input_headers": ["X-Member-ID", "x-member-id"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/bulletin/",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/bulletin/",
-          "host": ["http://app-service-svc:3001"],
-          "input_headers": ["X-Member-ID", "x-member-id"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/bulletin/",
-      "method": "POST",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/bulletin/",
-          "host": ["http://app-service-svc:3001"],
-          "method": "POST",
-          "input_headers": ["X-Member-ID", "x-member-id"]
+          "method": "POST"
         }
       ]
     },
@@ -348,8 +223,7 @@
         {
           "url_pattern": "/bulletin/",
           "host": ["http://app-service-svc:3001"],
-          "method": "PUT",
-          "input_headers": ["X-Member-ID", "x-member-id"]
+          "method": "PUT"
         }
       ]
     },
@@ -361,8 +235,76 @@
         {
           "url_pattern": "/bulletin/",
           "host": ["http://app-service-svc:3001"],
-          "method": "DELETE",
-          "input_headers": ["X-Member-ID", "x-member-id"]
+          "method": "DELETE"
+        }
+      ]
+    },
+    {
+      "endpoint": "/bulletin/{rest}",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/bulletin/{rest}",
+          "host": ["http://app-service-svc:3001"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/bulletin/{rest}",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/bulletin/{rest}",
+          "host": ["http://app-service-svc:3001"],
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "endpoint": "/bulletin/{rest}",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/bulletin/{rest}",
+          "host": ["http://app-service-svc:3001"],
+          "method": "PUT"
+        }
+      ]
+    },
+    {
+      "endpoint": "/bulletin/{rest}",
+      "method": "DELETE",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/bulletin/{rest}",
+          "host": ["http://app-service-svc:3001"],
+          "method": "DELETE"
+        }
+      ]
+    },
+
+    {
+      "endpoint": "/member",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/member",
+          "host": ["http://app-service-svc:3001"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/member",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/member",
+          "host": ["http://app-service-svc:3001"],
+          "method": "POST"
         }
       ]
     },
@@ -413,46 +355,12 @@
       ]
     },
     {
-      "endpoint": "/member",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/member",
-          "host": ["http://app-service-svc:3001"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/member",
-      "method": "POST",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/member",
-          "host": ["http://app-service-svc:3001"],
-          "method": "POST"
-        }
-      ]
-    },
-    {
       "endpoint": "/member/",
       "output_encoding": "no-op",
       "backend": [
         {
           "url_pattern": "/member/",
           "host": ["http://app-service-svc:3001"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/member/",
-      "method": "POST",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/member/",
-          "host": ["http://app-service-svc:3001"],
-          "method": "POST"
         }
       ]
     },
@@ -481,6 +389,7 @@
       ]
     }
   ],
+
   "extra_config": {
     "github_com/devopsfaith/krakend-cors": {
       "allow_origins": ["http://localhost:3000", "http://localhost:3001"],

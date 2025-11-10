@@ -414,6 +414,19 @@
           "method": "DELETE"
         }
       ]
+    },
+
+    {
+      "endpoint": "/search/graphql",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/graphql",
+          "host": ["http://search-service-svc:4000"],
+          "method": "POST"
+        }
+      ]
     }
   ],
   "extra_config": {
