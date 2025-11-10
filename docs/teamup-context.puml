@@ -1,0 +1,28 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+LAYOUT_WITH_LEGEND()
+
+Person(webUser, "Web User", "Students, researchers, and collaborators using TeamUp")
+Person(adminUser, "System Admin", "Monitors via direct database access")
+
+System_Boundary(teamup, "TeamUp Platform") {
+    System(systemTeamUp, "TeamUp Application", "Web and service platform for collaboration groups and bulletins")
+}
+
+System_Ext(googleOAuth, "Google OAuth", "Identity provider for social login")
+System_Ext(mailersend, "MailerSend", "External email delivery service")
+System_Ext(awsS3, "Amazon S3", "Cloud storage for uploaded assets")
+System_Ext(kafkaBroker, "Kafka Broker", "Message bus for notification events")
+System_Ext(operationalDBs, "Operational Databases", "MongoDB & PostgreSQL clusters")
+
+Rel(webUser, systemTeamUp, "Uses for creating groups, bulletins, and managing profiles", "HTTPS")
+Rel(adminUser, operationalDBs, "Runs monitoring queries on", "Mongo shell / SQL clients")
+
+Rel(systemTeamUp, googleOAuth, "Handles social sign-in via", "OAuth")
+Rel(systemTeamUp, mailersend, "Sends notification emails through", "HTTPS API")
+Rel(systemTeamUp, awsS3, "Stores uploaded images/files on", "HTTPS/S3 API")
+Rel(systemTeamUp, kafkaBroker, "Publishes notification events to", "Kafka protocol")
+Rel(systemTeamUp, operationalDBs, "Persists collaboration data in", "Drivers")
+
+@enduml
+

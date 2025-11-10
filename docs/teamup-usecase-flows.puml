@@ -1,0 +1,181 @@
+@startuml
+title User Registration (Email & Profile Bootstrap)
+actor WebUser
+participant "Web Front-End" as Frontend
+participant "KrakenD API Gateway" as Gateway
+participant "Auth Service" as AuthSvc
+database "PostgreSQL\nAuth DB" as Postgres
+participant "Redis\nSession Cache" as Redis
+participant "App Service" as AppSvc
+database "MongoDB" as Mongo
+
+WebUser -> Frontend : Fill registration form\n(name, email, password, profile data)
+Frontend -> Gateway : POST /auth/register
+Gateway -> AuthSvc : Forward request
+AuthSvc -> Postgres : Check email uniqueness\nand create user record
+AuthSvc <-- Postgres : User persisted
+AuthSvc -> AuthSvc : Hash password\nGenerate username
+AuthSvc -> AppSvc : POST /member/\n(create profile document)
+AppSvc -> Mongo : Insert member document
+Mongo --> AppSvc : Member created
+AppSvc --> AuthSvc : Success payload
+AuthSvc -> Redis : Cache session seed (optional invite)
+AuthSvc --> Gateway : 201 Created
+Gateway --> Frontend : Registration success
+Frontend --> WebUser : Show confirmation message
+@enduml
+
+@startuml
+title User Login & Session Establishment
+actor WebUser
+participant Frontend
+participant Gateway
+participant AuthSvc
+database Postgres
+participant Redis
+
+WebUser -> Frontend : Submit credentials
+Frontend -> Gateway : POST /auth/login
+Gateway -> AuthSvc : Forward request
+AuthSvc -> Postgres : Lookup user by email
+Postgres --> AuthSvc : User row + password hash
+AuthSvc -> AuthSvc : Compare password\nGenerate JWT (access_token)
+AuthSvc -> Redis : SET sessionKey(token)=email\nTTL = 24h
+AuthSvc --> Gateway : 200 OK + Set-Cookie(access_token)
+Gateway --> Frontend : Response with JWT cookie
+Frontend --> WebUser : Redirect to dashboard (authenticated)
+@enduml
+
+@startuml
+title Member Profile Update (with optional image upload)
+actor WebUser
+participant Frontend
+participant Gateway
+participant AppSvc
+participant "AWS S3" as S3
+database Mongo
+
+WebUser -> Frontend : Edit profile + upload image
+Frontend -> Gateway : PUT /member/{id}\nmultipart or JSON
+Gateway -> AppSvc : Forward request
+AppSvc -> AppSvc : Validate owner, sanitize payload
+AppSvc -> S3 : Upload profile image (if provided)
+S3 --> AppSvc : S3 object URL
+AppSvc -> Mongo : Update member document
+Mongo --> AppSvc : Updated member DTO
+AppSvc --> Gateway : 200 OK (updated profile)
+Gateway --> Frontend : Response payload
+Frontend --> WebUser : Show success toast & refreshed profile
+@enduml
+
+@startuml
+title Create Collaboration Group & Notify Members
+actor WebUser
+participant Frontend
+participant Gateway
+participant AppSvc
+database Mongo
+participant "Kafka Broker" as Kafka
+participant "Notification Service" as Notifier
+participant "MailerSend API" as Mailer
+
+WebUser -> Frontend : Fill group form (title, tags, members)
+Frontend -> Gateway : POST /group/
+Gateway -> AppSvc : Forward request
+AppSvc -> Mongo : Insert group document
+Mongo --> AppSvc : Stored group DTO
+AppSvc -> Kafka : Publish NotificationMessage\n(type=email, subject, message)
+Kafka --> Notifier : Deliver message to consumer
+Notifier -> Mailer : POST /email (MailerSend API)
+Mailer --> Notifier : 2xx Accepted
+Notifier --> Kafka : Commit offset
+AppSvc --> Gateway : 201 Created + group data
+Gateway --> Frontend : Response
+Frontend --> WebUser : Show "Group created" confirmation
+@enduml
+
+@startuml
+title Join/Leave Group Flow
+actor WebUser
+participant Frontend
+participant Gateway
+participant AppSvc
+database Mongo
+
+WebUser -> Frontend : Click Join/Leave
+Frontend -> Gateway : PUT /group/{id}\nbody: updated members array
+Gateway -> AppSvc : Forward request with X-Member-ID
+AppSvc -> AppSvc : Authorize requester, merge members
+AppSvc -> Mongo : Update group members list
+Mongo --> AppSvc : Updated group DTO
+AppSvc --> Gateway : 200 OK
+Gateway --> Frontend : Updated group state
+Frontend --> WebUser : UI reflects joined/left status
+@enduml
+
+@startuml
+title Create Bulletin with Image & Group Links
+actor WebUser
+participant Frontend
+participant Gateway
+participant AppSvc
+participant S3
+database Mongo
+
+WebUser -> Frontend : Compose bulletin + upload poster
+Frontend -> Gateway : POST /bulletin/\n(multipart form)
+Gateway -> AppSvc : Forward request
+AppSvc -> S3 : Upload poster image (if file provided)
+S3 --> AppSvc : Public image URL
+AppSvc -> Mongo : Insert bulletin document
+Mongo --> AppSvc : Stored bulletin DTO
+AppSvc --> Gateway : 201 Created
+Gateway --> Frontend : Response payload
+Frontend --> WebUser : Show bulletin detail / redirect
+@enduml
+
+@startuml
+title GraphQL Group Search
+actor WebUser
+participant Frontend
+participant Gateway
+participant "Search Service" as SearchSvc
+participant "GroupSearchService" as GroupSvc
+participant "Group HTTP Client" as GroupClient
+participant AppSvc
+database Mongo
+
+WebUser -> Frontend : Enter search criteria (title/tags/date)
+Frontend -> Gateway : POST /graphql (search query)
+Gateway -> SearchSvc : Forward GraphQL request
+SearchSvc -> GroupSvc : Resolve searchGroups(filter)
+GroupSvc -> GroupClient : ListGroups()
+GroupClient -> AppSvc : GET /group/
+AppSvc -> Mongo : Fetch groups collection
+Mongo --> AppSvc : Group DTO list
+AppSvc --> GroupClient : JSON payload
+GroupClient --> GroupSvc : Group array
+GroupSvc -> GroupSvc : Filter by tags/date/closed
+GroupSvc --> SearchSvc : Filtered slice with pagination
+SearchSvc --> Gateway : GraphQL response
+Gateway --> Frontend : searchGroups data
+Frontend --> WebUser : Render filtered results
+@enduml
+
+@startuml
+title Notification Dispatch (Kafka Consumer)
+participant Kafka
+participant "Notification Service" as Notifier
+participant "EmailNotifier" as EmailN
+participant Mailer
+
+Kafka -> Notifier : Deliver NotificationMessage\n(type=email, to, subject, message)
+Notifier -> Notifier : Parse JSON payload
+Notifier -> EmailN : SendEmail(to, subject, message)
+EmailN -> Mailer : POST /email
+Mailer --> EmailN : 2xx response
+EmailN --> Notifier : Success status
+Notifier -> Kafka : Commit consumer offset
+@enduml
+
+

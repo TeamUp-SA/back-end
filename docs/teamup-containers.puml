@@ -1,0 +1,56 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+LAYOUT_WITH_LEGEND()
+
+Person(webUser, "Web User", "Collaborates via the TeamUp web app")
+
+System_Ext(googleOAuth, "Google OAuth", "Identity provider for social login")
+System_Ext(mailersend, "MailerSend API", "Transactional outbound email")
+System_Ext(awsS3, "Amazon S3", "Object storage for uploaded images")
+
+System_Boundary(teamup, "TeamUp Platform") {
+    Container(webApp, "Web Front-End", "Next.js / React", "Browser UI for bulletins, groups, profiles")
+    Container(apiGateway, "API Gateway", "KrakenD", "Routes client requests to internal services")
+
+    Container(appService, "App Service", "Go (Gin)", "REST API for bulletins, groups, members, S3 uploads, Kafka events")
+    Container(authService, "Auth Service", "Go (Gin)", "Authentication, JWT issuance, Google OAuth handshake")
+    Container(userService, "User Service", "Go (Gin + gRPC)", "Account profile API and gRPC endpoints, Redis caching")
+    Container(searchService, "Search Service", "Go (GraphQL)", "GraphQL facade over group search and filters")
+    Container(notificationService, "Notification Service", "Go worker", "Consumes Kafka events and delivers notifications")
+
+    ContainerDb(mongoDB, "MongoDB", "Document DB", "Bulletins, groups, member profiles")
+    ContainerDb(postgresDB, "PostgreSQL", "Relational DB", "Auth accounts and user records")
+    ContainerDb(redisCache, "Redis", "In-memory cache", "Session tokens and profile cache")
+    Container(kafkaBroker, "Kafka Broker", "Kafka", "Notification event stream")
+}
+
+Rel(webUser, webApp, "Uses", "HTTPS")
+Rel(webApp, apiGateway, "Invokes APIs", "HTTPS/JSON")
+
+Rel(apiGateway, appService, "Routes requests", "REST/JSON")
+Rel(apiGateway, authService, "Routes requests", "REST/JSON")
+Rel(apiGateway, userService, "Routes requests", "REST/JSON")
+Rel(apiGateway, searchService, "Routes queries", "GraphQL over HTTP")
+
+Rel(appService, mongoDB, "Reads/Writes", "MongoDB driver")
+Rel(appService, awsS3, "Uploads media", "HTTPS/S3 SDK")
+Rel(appService, kafkaBroker, "Publishes notifications", "Kafka producer")
+
+Rel(authService, postgresDB, "Reads/Writes", "GORM/SQL")
+Rel(authService, redisCache, "Stores sessions", "Redis protocol")
+Rel(authService, googleOAuth, "Exchanges OAuth tokens", "HTTPS")
+
+Rel(userService, postgresDB, "Reads/Writes", "GORM/SQL")
+Rel(userService, redisCache, "Caches profiles", "Redis protocol")
+Rel(authService, userService, "Syncs OAuth users", "gRPC")
+
+Rel(searchService, appService, "Fetches groups", "REST/JSON")
+
+Rel(notificationService, kafkaBroker, "Consumes events", "Kafka consumer")
+Rel(notificationService, mailersend, "Sends email alerts", "HTTPS")
+
+Rel(webApp, awsS3, "Loads media assets", "HTTPS")
+
+@enduml
+
+
