@@ -1,0 +1,93 @@
+@startuml
+skinparam shadowing false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam legendBackgroundColor #F7F7F7
+skinparam legendBorderColor #BBBBBB
+hide empty methods
+
+legend right
+  <b>TeamUp Search Service – Class Diagram</b>
+  GraphQL gateway that reuses the app-service group API.
+endlegend
+
+package "GraphQL Layer" {
+    class SchemaBuilder {
+        - GroupService : group.Service
+        + Build() : gql.Schema
+    }
+
+    class GraphQLServer {
+        - conf : *config.Config
+        - schema : gql.Schema
+        + Run() : error
+        - handleGraphQL(w http.ResponseWriter, r *http.Request)
+        - writeResult(w http.ResponseWriter, params gql.Params)
+    }
+
+    SchemaBuilder ..> group.Service
+    GraphQLServer ..> SchemaBuilder
+    GraphQLServer ..> gql.Schema
+}
+
+package "Domain Service" {
+    interface GroupService {
+        + Search(ctx context.Context, filter SearchFilter) : ([]Group, error)
+    }
+
+    class GroupSearchService {
+        - client : Client
+        - defaultLimit : int64
+        - maxLimit : int64
+        + Search(ctx context.Context, filter SearchFilter) : ([]Group, error)
+    }
+
+    GroupSearchService ..|> GroupService
+}
+
+package "Upstream Client" {
+    interface Client {
+        + ListGroups(ctx context.Context) : ([]Group, error)
+    }
+
+    class HTTPClient {
+        - baseURL : string
+        - httpClient : *http.Client
+        + ListGroups(ctx context.Context) : ([]Group, error)
+    }
+
+    HTTPClient ..|> Client
+}
+
+package "DTO / Models" {
+    class SearchFilter {
+        + Title : string
+        + Tags : []GroupTag
+        + DateQuery : string
+        + IncludeClosed : *bool
+        + Limit : int64
+        + Offset : int64
+    }
+
+    class Group {
+        + GroupID : string
+        + Title : string
+        + Description : string
+        + OwnerID : string
+        + Members : []string
+        + Tags : []GroupTag
+        + Closed : bool
+        + Date : string
+        + CreatedAt : string
+    }
+}
+
+SchemaBuilder ..> SearchFilter
+SchemaBuilder ..> Group
+GroupSearchService ..> SearchFilter
+GroupSearchService ..> Group
+HTTPClient ..> Group
+
+@enduml
+
+

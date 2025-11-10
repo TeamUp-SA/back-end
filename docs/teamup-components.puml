@@ -1,0 +1,85 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+LAYOUT_WITH_LEGEND()
+
+Person(webUser, "Web User", "Collaborates via the TeamUp UI")
+
+System_Ext(googleOAuth, "Google OAuth")
+System_Ext(mailersend, "MailerSend API", "Outgoing email deliveries")
+System_Ext(awsS3, "Amazon S3", "Stores uploaded images/files")
+
+System_Boundary(teamup, "TeamUp Platform") {
+    Container(frontend, "Web Front-End", "Next.js / React", "Client-side experience, consumes API gateway")
+    Container(apiGateway, "API Gateway", "KrakenD", "Single entry point routing to back-end services")
+
+    Container(appService, "App Service", "Go (Gin)", "Core collaboration domain APIs: bulletins, groups, members")
+    Container(authService, "Auth Service", "Go (Gin)", "User registration, password auth, Google OAuth, JWT/session issuance")
+    Container(userService, "User Service", "Go (Gin)", "Account profile read/update, Redis caching")
+    Container(notificationService, "Notification Service", "Go", "Consumes Kafka topics and sends email notifications")
+    Container(searchService, "Search Service", "Go (GraphQL)", "GraphQL wrapper for group search with filters")
+
+    ContainerDb(mongoDB, "MongoDB", "MongoDB Atlas / cluster", "Persists bulletins, groups, member profiles")
+    ContainerDb(postgresDB, "PostgreSQL", "PostgreSQL", "Persists auth accounts & user profiles")
+    ContainerDb(redisCache, "Redis", "Redis", "Session tokens & user cache")
+    Container(kafkaBroker, "Kafka Broker", "Kafka", "Event bus for group notifications")
+}
+
+Component(appController, "REST Controllers", "Gin handlers", "Bulletin, Group, Member controllers")
+Component(appServiceLayer, "Domain Services", "Go services", "Business rules for bulletins, groups, members")
+Component(appRepository, "Repositories", "MongoDB data access", "CRUD for core collections")
+Rel(appController, appServiceLayer, "Delegates to")
+Rel(appServiceLayer, appRepository, "Reads/Writes")
+Rel(appServiceLayer, awsS3, "Uploads media", "S3 SDK")
+Rel(appRepository, mongoDB, "CRUD", "Mongo Driver")
+
+Component(authHTTP, "Auth HTTP Handlers", "Gin handlers", "Register/Login/Logout endpoints")
+Component(authJWT, "JWT & Session Manager", "Go package", "Issues JWTs, manages Redis session state")
+Component(authExternal, "External OAuth Client", "Google API client", "Handles Google login flow")
+Rel(authHTTP, authJWT, "Issues tokens, stores sessions")
+Rel(authHTTP, authExternal, "OAuth exchange")
+Rel(authJWT, redisCache, "Stores session tokens")
+Rel(authHTTP, postgresDB, "User credentials", "GORM")
+
+Component(userHandlers, "User HTTP Handlers", "Gin handlers", "GetMe, Update Profile")
+Component(userCache, "Cache Layer", "Redis client", "Reads/Writes cached profiles")
+Component(userRepo, "User Repository", "GORM", "CRUD on user table")
+Component(userGrpcServer, "User gRPC Server", "protobuf / gRPC", "Upsert/Get profile APIs for other services")
+Rel(userHandlers, userCache, "Reads/Writes user cache")
+Rel(userHandlers, userRepo, "Updates profiles")
+Rel(userGrpcServer, userRepo, "Upserts & reads profiles")
+Rel(userRepo, postgresDB, "CRUD")
+Rel(userCache, redisCache, "Stores user snapshots")
+
+Rel(authService, userGrpcServer, "Sync OAuth users", "gRPC")
+
+Component(notificationConsumer, "Kafka Consumer", "Go client", "Consumes group notifications")
+Component(notificationEmail, "Mailer Adapter", "MailerSend client", "Sends emails")
+Rel(notificationConsumer, kafkaBroker, "Consumes notifications")
+Rel(notificationConsumer, notificationEmail, "Dispatches email")
+Rel(notificationEmail, mailersend, "Send email")
+
+Component(searchGraphQL, "GraphQL Server", "graphql-go", "Exposes search schema")
+Component(searchClient, "Group API Client", "HTTP client", "Calls App Service group endpoints")
+Rel(searchGraphQL, searchClient, "Fetches groups")
+Rel(searchClient, apiGateway, "REST calls", "HTTP/JSON")
+
+Rel(webUser, frontend, "Uses", "HTTPS")
+Rel(frontend, apiGateway, "API calls", "HTTPS / JSON")
+Rel(apiGateway, appService, "Routes", "REST")
+Rel(apiGateway, authService, "Routes", "REST")
+Rel(apiGateway, userService, "Routes", "REST")
+Rel(apiGateway, searchService, "Routes", "GraphQL")
+Rel(appService, kafkaBroker, "Publishes group notifications", "Kafka")
+Rel(notificationService, kafkaBroker, "Consumes", "Kafka")
+Rel(notificationService, mailersend, "Sends email", "HTTPS")
+Rel(appService, mongoDB, "CRUD", "Mongo wire protocol")
+Rel(authService, postgresDB, "CRUD", "SQL")
+Rel(userService, postgresDB, "CRUD", "SQL")
+Rel(authService, redisCache, "Sessions", "Redis protocol")
+Rel(userService, redisCache, "User cache", "Redis protocol")
+Rel(frontend, awsS3, "Loads media", "HTTPS")
+Rel(authService, googleOAuth, "OAuth flow", "HTTPS")
+
+@enduml
+
