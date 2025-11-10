@@ -25,7 +25,7 @@ echo "--- Target namespace set."
 echo "--- (1/5) Deleting old Kubernetes resources..."
 # We pipe stderr to /dev/null to suppress "not found" messages.
 kubectl delete -f k8s-full-stack.yaml -n "$NAMESPACE" 2>/dev/null
-kubectl delete secret postgres-secret user-service-secret auth-service-secret notification-service-secret app-service-secret -n "$NAMESPACE" 2>/dev/null
+kubectl delete secret postgres-secret user-service-secret auth-service-secret notification-service-secret app-service-secret search-service-secret -n "$NAMESPACE" 2>/dev/null
 kubectl delete configmap krakend-config-cm postgres-init-sql-cm -n "$NAMESPACE" 2>/dev/null
 kubectl delete pvc postgres-pvc redis-pvc -n "$NAMESPACE" 2>/dev/null
 
@@ -43,6 +43,8 @@ docker build -t notification-service:latest ./notification-service
 check_error "Notification Service image build failed."
 docker build -t app-service:latest ./app-service
 check_error "App Service image build failed."
+docker build -t search-service:latest ./search-service
+check_error "Search Service image build failed."
 echo "--- Docker images built."
 
 # === 4. CREATE CONFIGS & SECRETS ===
@@ -62,6 +64,8 @@ kubectl create secret generic notification-service-secret --from-env-file=notifi
 check_error "Secret notification-service-secret failed."
 kubectl create secret generic app-service-secret --from-env-file=app-service.env -n "$NAMESPACE"
 check_error "Secret app-service-secret failed."
+kubectl create secret generic search-service-secret --from-env-file=search-service.env -n "$NAMESPACE"
+check_error "Secret search-service-secret failed."
 echo "--- Configs and Secrets created."
 
 # === 5. DEPLOY TO KUBERNETES ===
