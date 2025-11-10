@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
+	"strings"
 
 	"app-service/internal/dto"
 	"app-service/internal/model"
@@ -9,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type IGroupController interface {
@@ -99,6 +102,15 @@ func (s GroupController) GetGroupByID(c *gin.Context) {
 	res, err := s.groupService.GetGroupByID(groupID)
 
 	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			c.JSON(http.StatusNotFound, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusNotFound,
+				Error:   "Group not found",
+				Message: err.Error(),
+			})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Status:  http.StatusInternalServerError,
@@ -142,6 +154,15 @@ func (s GroupController) GetGroupsByOwnerID(c *gin.Context) {
 	res, err := s.groupService.GetGroupsByOwnerID(ownerID)
 
 	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			c.JSON(http.StatusNotFound, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusNotFound,
+				Error:   "Group not found",
+				Message: err.Error(),
+			})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Status:  http.StatusInternalServerError,
@@ -172,6 +193,15 @@ func (s GroupController) GetGroups(c *gin.Context) {
 	res, err := s.groupService.GetGroups()
 
 	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			c.JSON(http.StatusNotFound, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusNotFound,
+				Error:   "No groups found",
+				Message: err.Error(),
+			})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Status:  http.StatusInternalServerError,
@@ -267,9 +297,37 @@ func (s GroupController) DeleteGroup(c *gin.Context) {
 		})
 		return
 	}
-	err = s.groupService.DeleteGroup(groupID)
+
+	memberIDHeader := strings.TrimSpace(c.GetHeader("X-Member-ID"))
+	requesterID := primitive.NilObjectID
+	if memberIDHeader != "" {
+		parsedID, parseErr := primitive.ObjectIDFromHex(memberIDHeader)
+		if parseErr != nil {
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusBadRequest,
+				Error:   "Invalid requester ID",
+				Message: parseErr.Error(),
+			})
+			return
+		}
+		requesterID = parsedID
+	}
+
+	err = s.groupService.DeleteGroup(groupID, requesterID)
 
 	if err != nil {
+		switch {
+		case errors.Is(err, service.ErrGroupNotFound):
+			c.JSON(http.StatusNotFound, dto.ErrorResponse{
+				Success: false,
+				Status:  http.StatusNotFound,
+				Error:   "Group not found",
+				Message: err.Error(),
+			})
+			return
+		}
+
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Status:  http.StatusInternalServerError,
@@ -284,4 +342,3 @@ func (s GroupController) DeleteGroup(c *gin.Context) {
 		Message: "Delete group success",
 	})
 }
-

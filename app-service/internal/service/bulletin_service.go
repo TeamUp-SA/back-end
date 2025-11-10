@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"mime/multipart"
 
 	"app-service/internal/dto"
@@ -9,6 +10,7 @@ import (
 	"app-service/internal/utils"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type IBulletinService interface {
@@ -18,12 +20,17 @@ type IBulletinService interface {
 	GetBulletinsByGroupID(groupID primitive.ObjectID) ([]dto.Bulletin, error)
 	CreateBulletin(bulletin *model.Bulletin, imageFile multipart.File, fileHeader *multipart.FileHeader) (*dto.Bulletin, error)
 	UpdateBulletin(bulletinID primitive.ObjectID, updatedBulletin *dto.BulletinUpdateRequest, imageFile multipart.File, fileHeader *multipart.FileHeader) (*dto.Bulletin, error)
-	DeleteBulletin(bulletinID primitive.ObjectID) error
+	DeleteBulletin(bulletinID primitive.ObjectID, requesterID primitive.ObjectID) error
 }
 
 type BulletinService struct {
 	bulletinRepository repository.IBulletinRepository
 }
+
+var (
+	ErrBulletinNotFound  = errors.New("bulletin not found")
+	ErrBulletinForbidden = errors.New("user is not the bulletin author")
+)
 
 func NewBulletinService(r repository.IBulletinRepository) IBulletinService {
 	return BulletinService{
@@ -97,12 +104,22 @@ func (s BulletinService) UpdateBulletin(bulletinID primitive.ObjectID, updatedBu
 	return updatedDTO, nil
 }
 
-func (s BulletinService) DeleteBulletin(bulletinID primitive.ObjectID) error {
+func (s BulletinService) DeleteBulletin(bulletinID primitive.ObjectID, requesterID primitive.ObjectID) error {
+	if requesterID == primitive.NilObjectID {
+		return ErrBulletinForbidden
+	}
 
-	err := s.bulletinRepository.DeleteBulletin(bulletinID)
+	bulletinDTO, err := s.bulletinRepository.GetBulletinByID(bulletinID)
 	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return ErrBulletinNotFound
+		}
 		return err
 	}
 
-	return nil
+	if bulletinDTO.AuthorID != requesterID {
+		return ErrBulletinForbidden
+	}
+
+	return s.bulletinRepository.DeleteBulletin(bulletinID)
 }

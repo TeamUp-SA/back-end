@@ -41,7 +41,7 @@ func NewDependencies(mongoDB *mongo.Database, conf *config.Config) *Dependencies
 
 	// Initialize services
 	bulletinService := service.NewBulletinService(bulletinRepo)
-	groupService := service.NewGroupService(groupRepo, memberRepo, notificationProducer)
+	groupService := service.NewGroupService(groupRepo, memberRepo, bulletinRepo, notificationProducer)
 	memberService := service.NewMemberService(memberRepo)
 
 	// Initialize controllers
