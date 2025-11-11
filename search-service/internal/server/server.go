@@ -28,7 +28,7 @@ func New(conf *config.Config, schema gql.Schema) *Server {
 // Run starts the HTTP server.
 func (s *Server) Run() error {
 	mux := http.NewServeMux()
-	mux.Handle("/graphql", s.wrapCORS(http.HandlerFunc(s.handleGraphQL)))
+	mux.Handle("/graphql", http.HandlerFunc(s.handleGraphQL))
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -121,9 +121,9 @@ func (s *Server) writeResult(w http.ResponseWriter, params gql.Params) {
 
 func (s *Server) wrapCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 		w.Header().Set("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Member-ID, x-member-id")
 		w.Header().Set("Access-Control-Max-Age", "3600")
 
 		if r.Method == http.MethodOptions {
