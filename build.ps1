@@ -2,7 +2,7 @@
 Write-Host "--- (1/5) Deleting old Kubernetes resources..."
 # We pipe errors to $null to suppress "not found" messages, which are expected.
 kubectl delete -f k8s-full-stack.yaml 2>$null
-kubectl delete secret postgres-secret user-service-secret auth-service-secret notification-service-secret app-service-secret 2>$null
+kubectl delete secret postgres-secret user-service-secret auth-service-secret notification-service-secret app-service-secret search-service-secret 2>$null
 kubectl delete configmap krakend-config-cm postgres-init-sql-cm 2>$null
 kubectl delete pvc postgres-pvc redis-pvc 2>$null
 Write-Host "--- Cleanup complete."
@@ -13,6 +13,7 @@ docker build -t user-service:latest ./user-service
 docker build -t auth-service:latest -f auth-service/Dockerfile .
 docker build -t notification-service:latest ./notification-service
 docker build -t app-service:latest ./app-service
+docker build -t search-service:latest ./search-service
 Write-Host "--- Docker images built."
 
 # === SECTION 3: CREATE CONFIGS & SECRETS ===
@@ -25,6 +26,7 @@ kubectl create secret generic user-service-secret --from-env-file=user-service.e
 kubectl create secret generic auth-service-secret --from-env-file=auth-service.env
 kubectl create secret generic notification-service-secret --from-env-file=notification-service.env
 kubectl create secret generic app-service-secret --from-env-file=app-service.env
+kubectl create secret generic search-service-secret --from-env-file=search-service.env
 Write-Host "--- Configs and Secrets created."
 
 # === SECTION 4: DEPLOY TO KUBERNETES ===

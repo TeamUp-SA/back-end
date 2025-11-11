@@ -4,7 +4,6 @@
   "port": 8888,
   "cache_ttl": "300s",
   "timeout": "3000ms",
-
   "endpoints": [
     {
       "endpoint": "/user/{rest}",
@@ -28,7 +27,6 @@
         }
       ]
     },
-
     {
       "endpoint": "/auth/{rest}",
       "output_encoding": "no-op",
@@ -63,7 +61,6 @@
         }
       ]
     },
-
     {
       "endpoint": "/application/{rest}",
       "output_encoding": "no-op",
@@ -86,7 +83,6 @@
         }
       ]
     },
-
     {
       "endpoint": "/search/graphql",
       "method": "POST",
@@ -99,26 +95,49 @@
         }
       ]
     },
-
     {
-      "endpoint": "/group",
+      "endpoint": "/group/",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
-          "url_pattern": "/group",
-          "host": ["http://app-service-svc:3001"]
+          "url_pattern": "/group/",
+          "host": ["http://app-service-svc:3001"],
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
     {
-      "endpoint": "/group",
+      "endpoint": "/group/",
       "method": "POST",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
-          "url_pattern": "/group",
+          "url_pattern": "/group/",
           "host": ["http://app-service-svc:3001"],
-          "method": "POST"
+          "method": "POST",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
@@ -126,11 +145,23 @@
       "endpoint": "/group/",
       "method": "PUT",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/group/",
           "host": ["http://app-service-svc:3001"],
-          "method": "PUT"
+          "method": "PUT",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
@@ -138,21 +169,45 @@
       "endpoint": "/group/",
       "method": "DELETE",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/group/",
           "host": ["http://app-service-svc:3001"],
-          "method": "DELETE"
+          "method": "DELETE",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
     {
       "endpoint": "/group/{rest}",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/group/{rest}",
-          "host": ["http://app-service-svc:3001"]
+          "host": ["http://app-service-svc:3001"],
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
@@ -160,11 +215,23 @@
       "endpoint": "/group/{rest}",
       "method": "POST",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/group/{rest}",
           "host": ["http://app-service-svc:3001"],
-          "method": "POST"
+          "method": "POST",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
@@ -172,11 +239,23 @@
       "endpoint": "/group/{rest}",
       "method": "PUT",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/group/{rest}",
           "host": ["http://app-service-svc:3001"],
-          "method": "PUT"
+          "method": "PUT",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
@@ -184,34 +263,69 @@
       "endpoint": "/group/{rest}",
       "method": "DELETE",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/group/{rest}",
           "host": ["http://app-service-svc:3001"],
-          "method": "DELETE"
+          "method": "DELETE",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
-
     {
-      "endpoint": "/bulletin",
+      "endpoint": "/bulletin/",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
-          "url_pattern": "/bulletin",
-          "host": ["http://app-service-svc:3001"]
+          "url_pattern": "/bulletin/",
+          "host": ["http://app-service-svc:3001"],
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
     {
-      "endpoint": "/bulletin",
+      "endpoint": "/bulletin/",
       "method": "POST",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
-          "url_pattern": "/bulletin",
+          "url_pattern": "/bulletin/",
           "host": ["http://app-service-svc:3001"],
-          "method": "POST"
+          "method": "POST",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
@@ -219,11 +333,23 @@
       "endpoint": "/bulletin/",
       "method": "PUT",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/bulletin/",
           "host": ["http://app-service-svc:3001"],
-          "method": "PUT"
+          "method": "PUT",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
@@ -231,21 +357,45 @@
       "endpoint": "/bulletin/",
       "method": "DELETE",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/bulletin/",
           "host": ["http://app-service-svc:3001"],
-          "method": "DELETE"
+          "method": "DELETE",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
     {
       "endpoint": "/bulletin/{rest}",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/bulletin/{rest}",
-          "host": ["http://app-service-svc:3001"]
+          "host": ["http://app-service-svc:3001"],
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
@@ -253,11 +403,23 @@
       "endpoint": "/bulletin/{rest}",
       "method": "POST",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/bulletin/{rest}",
           "host": ["http://app-service-svc:3001"],
-          "method": "POST"
+          "method": "POST",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
@@ -265,11 +427,23 @@
       "endpoint": "/bulletin/{rest}",
       "method": "PUT",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/bulletin/{rest}",
           "host": ["http://app-service-svc:3001"],
-          "method": "PUT"
+          "method": "PUT",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
@@ -277,22 +451,45 @@
       "endpoint": "/bulletin/{rest}",
       "method": "DELETE",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/bulletin/{rest}",
           "host": ["http://app-service-svc:3001"],
-          "method": "DELETE"
+          "method": "DELETE",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
-
     {
       "endpoint": "/member",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/member",
-          "host": ["http://app-service-svc:3001"]
+          "host": ["http://app-service-svc:3001"],
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
@@ -300,21 +497,93 @@
       "endpoint": "/member",
       "method": "POST",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/member",
           "host": ["http://app-service-svc:3001"],
-          "method": "POST"
+          "method": "POST",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/member",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
+      "backend": [
+        {
+          "url_pattern": "/member",
+          "host": ["http://app-service-svc:3001"],
+          "method": "PUT",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/member",
+      "method": "DELETE",
+      "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
+      "backend": [
+        {
+          "url_pattern": "/member",
+          "host": ["http://app-service-svc:3001"],
+          "method": "DELETE",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
     {
       "endpoint": "/member/{rest}",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/member/{rest}",
-          "host": ["http://app-service-svc:3001"]
+          "host": ["http://app-service-svc:3001"],
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
@@ -322,11 +591,23 @@
       "endpoint": "/member/{rest}",
       "method": "POST",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/member/{rest}",
           "host": ["http://app-service-svc:3001"],
-          "method": "POST"
+          "method": "POST",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
@@ -334,11 +615,23 @@
       "endpoint": "/member/{rest}",
       "method": "PUT",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/member/{rest}",
           "host": ["http://app-service-svc:3001"],
-          "method": "PUT"
+          "method": "PUT",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     },
@@ -346,50 +639,27 @@
       "endpoint": "/member/{rest}",
       "method": "DELETE",
       "output_encoding": "no-op",
+      "input_headers": [
+        "X-Member-ID",
+        "Authorization",
+        "Content-Type",
+        "Cookie"
+      ],
       "backend": [
         {
           "url_pattern": "/member/{rest}",
           "host": ["http://app-service-svc:3001"],
-          "method": "DELETE"
-        }
-      ]
-    },
-    {
-      "endpoint": "/member/",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/member/",
-          "host": ["http://app-service-svc:3001"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/member/",
-      "method": "PUT",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/member/",
-          "host": ["http://app-service-svc:3001"],
-          "method": "PUT"
-        }
-      ]
-    },
-    {
-      "endpoint": "/member/",
-      "method": "DELETE",
-      "output_encoding": "no-op",
-      "backend": [
-        {
-          "url_pattern": "/member/",
-          "host": ["http://app-service-svc:3001"],
-          "method": "DELETE"
+          "method": "DELETE",
+          "headers_to_pass": [
+            "X-Member-ID",
+            "Authorization",
+            "Content-Type",
+            "Cookie"
+          ]
         }
       ]
     }
   ],
-
   "extra_config": {
     "github_com/devopsfaith/krakend-cors": {
       "allow_origins": ["http://localhost:3000", "http://localhost:3001"],

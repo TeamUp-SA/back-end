@@ -335,7 +335,6 @@ func (h *Handler) LoginWithGoogleHandler(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, auth.GetAuthURL(state))
 }
 
-
 func (h *Handler) CallbackHandler(c *gin.Context) {
 	state := c.Query("state")
 	code := c.Query("code")
@@ -387,15 +386,44 @@ func (h *Handler) CallbackHandler(c *gin.Context) {
 		Name:     "access_token",
 		Value:    token,
 		Path:     "/",
+		Domain:   "localhost", // allow frontend to read
 		HttpOnly: true,
-		Secure:   false, // change to true in production (HTTPS)
-		SameSite: http.SameSiteLaxMode,
+		Secure:   false,                 // true if HTTPS
+		SameSite: http.SameSiteNoneMode, // allow cross-site
 		MaxAge:   int(oauthSessionTTL.Seconds()),
 	})
-
-	c.String(http.StatusOK, "✅ Logged in successfully.")
+	gormDB := db.Gorm()
+	user := auth.User{
+		Username: gu.Name,
+		Name:     gu.GivenName,
+		Lastname: gu.FamilyName,
+		Email:    gu.Email,
+		Password: "",
+	}
+	regReq := registerRequest{
+		Name:        gu.Name, // full name from Google
+		Email:       gu.Email,
+		Password:    "", // OAuth user has no password
+		Bio:         "", // default empty
+		Github:      "", // optional
+		LinkedIn:    "",
+		Website:     "",
+		Educations:  []educationInput{},
+		Experiences: []experienceInput{},
+		Skills:      []string{},
+	}
+	if err := h.syncMemberProfile(c.Request.Context(), user, regReq, gu.GivenName, gu.FamilyName); err != nil {
+		log.Println("register sync member error:", err)
+		if delErr := gormDB.Delete(&auth.User{}, "id = ?", user.ID).Error; delErr != nil {
+			log.Println("register cleanup error:", delErr)
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to create account"})
+		return
+	}
+	redirectURL := fmt.Sprintf("http://localhost:3000/?email=%s", gu.Email)
+	c.Redirect(http.StatusSeeOther, redirectURL)
+	// c.String(http.StatusOK, "✅ Logged in successfully.")
 }
-
 
 func (h *Handler) LogoutHandler(c *gin.Context) {
 	if tok, err := c.Cookie("access_token"); err == nil && tok != "" {
@@ -573,11 +601,11 @@ func mapEducation(in []educationInput) []memberEducationDTO {
 		dto := memberEducationDTO{
 			School: school,
 		}
-	if trimmed := strings.TrimSpace(edu.Degree); trimmed != "" {
-		dto.Degree = trimmed
-	}
-	if trimmed := strings.TrimSpace(edu.Field); trimmed != "" {
-		dto.Field = trimmed
+		if trimmed := strings.TrimSpace(edu.Degree); trimmed != "" {
+			dto.Degree = trimmed
+		}
+		if trimmed := strings.TrimSpace(edu.Field); trimmed != "" {
+			dto.Field = trimmed
 		}
 		if edu.StartYear != nil && *edu.StartYear > 0 {
 			dto.StartYear = *edu.StartYear
