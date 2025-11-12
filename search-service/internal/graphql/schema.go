@@ -218,7 +218,7 @@ func convertTags(value interface{}) []group.GroupTag {
 	case []group.GroupTag:
 		return t
 	}
-	return nil
+	return []group.GroupTag{}
 }
 
 func getStringArg(p gql.ResolveParams, key string) string {

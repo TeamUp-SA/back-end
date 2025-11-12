@@ -51,8 +51,19 @@ func (s *service) Search(ctx context.Context, filter SearchFilter) ([]Group, err
 	if err != nil {
 		return nil, err
 	}
+	// ensure no nil tags
+	for i := range groups {
+		if groups[i].Tags == nil {
+			groups[i].Tags = []GroupTag{}
+		}
+	}
 
 	matching := filterGroups(groups, filter, includeClosed)
+	for i := range matching {
+		if matching[i].Tags == nil {
+			matching[i].Tags = []GroupTag{}
+		}
+	}
 	start := clamp(int(filter.Offset), 0, len(matching))
 	end := clamp(start+int(filter.Limit), start, len(matching))
 
@@ -74,6 +85,9 @@ func filterGroups(groups []Group, filter SearchFilter, includeClosed bool) []Gro
 		}
 		if dateQuery != "" && !strings.Contains(strings.ToLower(g.Date), dateQuery) {
 			continue
+		}
+		if g.Tags == nil {
+			g.Tags = []GroupTag{}
 		}
 		if len(tagLookup) > 0 && !groupMatchesTags(g.Tags, tagLookup) {
 			continue

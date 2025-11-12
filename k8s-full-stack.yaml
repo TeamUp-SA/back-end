@@ -488,7 +488,7 @@ kind: Deployment
 metadata:
   name: search-service-deployment
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: search-service

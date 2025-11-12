@@ -10,7 +10,7 @@ import (
 type GroupTag int32
 
 const (
-	GroupTagStudy GroupTag = iota
+	GroupTagStudy GroupTag = iota + 1
 	GroupTagProject
 	GroupTagHackathon
 	GroupTagCaseCompetition
